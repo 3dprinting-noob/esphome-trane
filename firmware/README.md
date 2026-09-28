@@ -96,3 +96,10 @@ Then after a heating/cooling cycle:
 ```bash
 bash pi_trane_capture_pack.sh 6     # last 6 hours
 ```
+
+## Install log
+
+- 2026-09-28 09:56 -04:00 — CB1 compiled in Home Assistant ESPHome Device Builder
+  (ESPHome 2026.9.0, board ESP32-S3 DevKitC-1) and uploaded over the air to
+  10.70.1.94: "OTA successful". Flash 74.1 % (1,360,639 of 1,835,008 bytes),
+  RAM 43.0 %. Post-install checks pending.
