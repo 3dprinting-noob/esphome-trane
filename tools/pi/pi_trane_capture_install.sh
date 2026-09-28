@@ -47,6 +47,13 @@ esac
 ESP="${1:-10.70.1.94}"
 KEY="${2:-}"
 
+# Reject typos such as "10.70.1.94E": an IPv4 address or a host name only.
+if ! [[ "$ESP" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ || "$ESP" =~ ^[A-Za-z][A-Za-z0-9.-]*$ ]] \
+   || [[ "$ESP" =~ ^[0-9.]+[A-Za-z] ]]; then
+  echo "'$ESP' is not a valid IP address or host name." >&2
+  exit 1
+fi
+
 free_mb=$(df -Pm "$HOME" | awk 'NR==2 {print $4}')
 if [ "$free_mb" -lt "$MIN_FREE_MB" ]; then
   echo "Only ${free_mb} MB free; need ${MIN_FREE_MB} MB (about 80-100 MB per day compressed, more while the day is open)." >&2
@@ -93,7 +100,9 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
-sudo systemctl enable --now trane-capture.service
+sudo systemctl enable trane-capture.service
+# restart (not just start) so a re-run always applies the new address/key
+sudo systemctl restart trane-capture.service
 echo "Started. Checking in 30 s..."
 sleep 30
 status
