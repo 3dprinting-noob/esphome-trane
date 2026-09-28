@@ -105,3 +105,6 @@ bash pi_trane_capture_pack.sh 6     # last 6 hours
   (ESPHome 2026.9.0, board ESP32-S3 DevKitC-1) and uploaded over the air to
   10.70.1.94: "OTA successful". Flash 74.1 % (1,360,639 of 1,835,008 bytes),
   RAM 43.0 %. Post-install checks pending.
+- 2026-09-28 10:14 -04:00 — Kitchen Pi recorder running (`trane-capture.service`,
+  no API key): 1,106 CAN frames + 4 JSON messages in the first 30 s
+  (~37 frames/s, ~10 KB/s of JSONL before daily compression). Pi has 23 GB free.
