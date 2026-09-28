@@ -2,7 +2,9 @@
 #
 # Built from installed/esphome-trane.atoms3r.yaml. Changes:
 #   - CAN stays mode: LISTENONLY; every transmit path is removed (transmit
-#     script, set_temperature/set_mode API actions, "Trane Climate" entity).
+#     script, set_temperature/set_mode API actions, climate card actions).
+#     The "Trane Climate" card stays as display only (dewbot6 trane_hvac
+#     component, pinned to v0.1.0, fetched from GitHub).
 #   - Every existing sensor keeps its name, so Home Assistant entity IDs and
 #     Climate Brain bindings are unchanged.
 #   - Stale-value fixes: Compressor Frequency and Indoor Blower Speed now
@@ -42,6 +44,13 @@ esphome:
       name: "Trane Heat Pump"
 
 external_components:
+  - source:
+      type: git
+      url: https://github.com/dewbot6/esphome-trane
+      ref: v0.1.0
+      path: components
+    components: [trane_hvac]
+    
   - source: github://m5stack/esphome-yaml/components
     components: [lp5562]
     refresh: 0s
@@ -1155,6 +1164,25 @@ text_sensor:
     device_id: dev_sc360
 
 # ---------------------------------------------------------------------------
+# Climate entity
+# ---------------------------------------------------------------------------
+climate:
+  - platform: trane_hvac
+    id: trane_climate
+    name: "Trane Climate"
+    device_id: dev_thermostat
+    current_temperature_sensor: room_temp
+    heat_setpoint_sensor: heat_setpoint
+    cool_setpoint_sensor: cool_setpoint
+    mode_text_sensor: system_mode
+    demand_stage_sensor: system_demand
+    indoor_unit_state_sensor: indoor_unit_state
+
+    # Display only: no set_*_action, so the card cannot send anything (CAN is
+    # LISTENONLY as well). Changes made on the card are optimistic and are
+    # overwritten by the next setpoint/mode update from the bus (within ~5 s).
+
+# ---------------------------------------------------------------------------
 # CAN bus
 # ---------------------------------------------------------------------------
 canbus:
@@ -1213,6 +1241,10 @@ canbus:
                     // Source (SpOverride only — "2"=thermostat direct, "1"=system default)
                     auto src = j.find("\"Source\":\"", z1s);
                     if (src != std::string::npos && src < z1e_pos) { src += 10; auto e = j.find("\"", src); if (e != std::string::npos) id(setpoint_source).publish_state(j.substr(src, e-src)); }
+                    auto *cl = id(trane_climate);
+                    cl->target_temperature_low  = (id(hsp_zone1) - 32.0f) * 5.0f / 9.0f;
+                    cl->target_temperature_high = (id(csp_zone1) - 32.0f) * 5.0f / 9.0f;
+                    cl->publish_state();
                   }
                   // ZoneStatus zone 1 — E (airflow %), F (state), G (demand %)
                   {

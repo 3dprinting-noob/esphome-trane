@@ -8,7 +8,8 @@ CAN pins.
 
 | Area | Change |
 |---|---|
-| Transmit | `mode: LISTENONLY` kept. Transmit script, `set_temperature` / `set_mode` API actions and the `Trane Climate` entity removed (no C++ component needed any more) |
+| Transmit | `mode: LISTENONLY` kept. Transmit script, `set_temperature` / `set_mode` API actions and the climate card's set actions removed |
+| Trane Climate card | Kept as **display only** (`climate.trane_thermostat_ux360_trane_climate`, on a dashboard). Uses dewbot6's `trane_hvac` component fetched from GitHub at `v0.1.0` (Device Builder has no local copy). Changes made on the card do nothing and are overwritten by the bus within ~5 s |
 | Entity IDs | Every existing sensor keeps its name, so `sensor.trane_*` IDs and Climate Brain bindings are unchanged |
 | Stale values | `Compressor Frequency` and `Indoor Blower Speed` now publish 0 (they previously froze at the last running value). `Supply Air Fault` clears to `none` once numeric IndoorStatus resumes (`TA_INV_HI` is a normal startup token) |
 | Raw capture | Every frame logged as `TRANE_CAN_LIVE,S,<ms>,<id>,<dlc>,<hex>`; JSON as `TRANE_JSON,<id>,<json>` — the format `tools/pi/pi_trane_capture_install.sh` records |
@@ -70,8 +71,9 @@ that stays `unknown` means the frame is not on this bus).
    when the system is idle; the ESPHome device page shows `CAN Frames Received`
    rising.
 
-**Undo:** paste `installed/esphome-trane.atoms3r.yaml` back (it also needs the
-`components/trane_hvac` folder), or flash the previous build from your Mac/PC.
+**Undo:** paste `installed/esphome-trane.atoms3r.yaml` back, changing its
+`type: local` component source to the same GitHub `v0.1.0` source used here,
+or flash the previous build from your Mac/PC.
 
 ## Raw capture on the kitchen Pi
 
