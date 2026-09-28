@@ -21,7 +21,12 @@ if [ "${#files[@]}" -eq 0 ]; then
 fi
 
 name="trane-capture-$(date +%Y%m%d-%H%M)-${HOURS}h.tar.gz"
-tar -czf "$OUT/$name" -C "$BASE/data" "${files[@]}"
+# The recorder is still appending to the current hour's chunk; tar a snapshot
+# copy so it does not fail with "file changed as we read it".
+snap=$(mktemp -d "$OUT/.snap.XXXXXX")
+trap 'rm -rf "$snap"' EXIT
+for f in "${files[@]}"; do cp -p "$BASE/data/$f" "$snap/$f"; done
+tar -czf "$OUT/$name" -C "$snap" "${files[@]}"
 tar -tzf "$OUT/$name" >/dev/null   # archive integrity check
 
 echo "files: ${#files[@]}"
