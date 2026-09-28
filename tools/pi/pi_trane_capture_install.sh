@@ -4,12 +4,14 @@
 # alongside Home Assistant) and writes hourly JSONL chunks plus daily .tar.gz
 # archives, using uncharted9898's trane_log_collector.py (MIT), pinned below.
 #
-#   bash pi_trane_capture_install.sh [esp-address]   # install + start (default 10.70.1.94)
+#   bash pi_trane_capture_install.sh [esp-address] [api-key]   # install + start (default 10.70.1.94)
 #   bash pi_trane_capture_install.sh --status        # service state + data size
 #   bash pi_trane_capture_install.sh --undo          # stop + remove service (keeps data)
 #
 # Run as kitchen-panel-pi; it asks for sudo only to install the systemd unit.
 # Requires firmware profile CB1 (the device must log TRANE_CAN_LIVE lines).
+# api-key: the device's `api: encryption: key:` value, if encryption is on.
+# It is stored in ~/trane-capture/api.env (mode 600), not in the unit file.
 set -euo pipefail
 
 BASE="$HOME/trane-capture"
@@ -43,6 +45,7 @@ case "${1:-}" in
 esac
 
 ESP="${1:-10.70.1.94}"
+KEY="${2:-}"
 
 free_mb=$(df -Pm "$HOME" | awk 'NR==2 {print $4}')
 if [ "$free_mb" -lt "$MIN_FREE_MB" ]; then
@@ -56,6 +59,9 @@ if ! python3 -m venv --help >/dev/null 2>&1 || ! python3 -c 'import ensurepip' 2
 fi
 
 mkdir -p "$BASE/bin" "$BASE/data"
+# Only set the variable when a key is given: an empty value would still be
+# read as an (invalid) key by the collector.
+( umask 077; if [ -n "$KEY" ]; then printf 'ESPHOME_NOISE_PSK=%s\n' "$KEY"; fi > "$BASE/api.env" )
 curl -fsSL "$URL" -o "$BASE/bin/trane_log_collector.py.new"
 got=$(sha256sum "$BASE/bin/trane_log_collector.py.new" | cut -d' ' -f1)
 if [ "$got" != "$SHA" ]; then
@@ -76,6 +82,7 @@ Wants=network-online.target
 [Service]
 User=$(id -un)
 WorkingDirectory=$BASE
+EnvironmentFile=$BASE/api.env
 ExecStart=$BASE/venv/bin/python $BASE/bin/trane_log_collector.py $ESP -o $BASE/data/trane.jsonl
 Restart=always
 RestartSec=15
@@ -91,6 +98,7 @@ echo "Started. Checking in 30 s..."
 sleep 30
 status
 echo
-echo "If 'CAN frames' is 0: the device may still be on the old firmware (no TRANE_CAN_LIVE lines)."
+echo "If 'CAN frames' is 0: check the log with  journalctl -u trane-capture -n 30"
+echo "  (an encryption/handshake error means the api key is missing or wrong)."
 echo "Check again any time:  bash $0 --status"
 echo "Remove:                bash $0 --undo"

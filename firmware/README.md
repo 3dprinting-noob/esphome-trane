@@ -88,8 +88,10 @@ scp pi_trane_capture_install.sh pi_trane_capture_pack.sh kitchen-panel-pi@10.70.
 Then on the Pi (`kitchen-panel-pi@kitchen-panel`):
 
 ```bash
-bash pi_trane_capture_install.sh 10.70.1.94
+bash pi_trane_capture_install.sh 10.70.1.94 '<api encryption key>'
 ```
+
+(Leave the key out if API encryption is off.)
 
 Then after a heating/cooling cycle:
 
