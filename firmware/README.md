@@ -108,3 +108,13 @@ bash pi_trane_capture_pack.sh 6     # last 6 hours
 - 2026-09-28 10:14 -04:00 — Kitchen Pi recorder running (`trane-capture.service`,
   no API key): 1,106 CAN frames + 4 JSON messages in the first 30 s
   (~37 frames/s, ~10 KB/s of JSONL before daily compression). Pi has 23 GB free.
+
+## Profile CB2 (2026-09-28)
+
+`esphome-trane.cb2.yaml` = CB1 plus the fixes from the first household capture
+(`docs/house/TELEMETRY_HOUSE.md`): room temperature, compressor demand and
+indoor humidity from continuous binary frames; SystemOpStatus.E treated as
+humidity ("SC360 Outdoor Temp" no longer updates); Compressor Power in W; new
+Operating Mode, Outdoor Fan Speed Request, Blower Speed Request and Compressor
+Phase Current. Same install path as CB1 (paste, Save, Install → Wirelessly;
+OTA now uses `ota_password`). `esphome config` valid (2026.6.5).

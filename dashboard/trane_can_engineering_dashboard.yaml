@@ -9,7 +9,7 @@ views:
         cards:
           - type: custom:mushroom-title-card
             title: Trane CAN Engineering
-            subtitle: Passive listen-only (firmware CB1) • no CAN write controls exposed
+            subtitle: Passive listen-only (firmware CB2) • no CAN write controls exposed
           - type: thermostat
             entity: climate.trane_thermostat_ux360_trane_climate
             name: Trane (display only – control via Nexia zones)
@@ -23,6 +23,16 @@ views:
                 name: Compressor speed actual (rps)
               - entity: sensor.trane_air_handler_indoor_blower_speed
                 name: Blower %
+          - type: history-graph
+            title: Power (6 h)
+            hours_to_show: 6
+            entities:
+              - entity: sensor.trane_heat_pump_outdoor_input_power
+                name: Outdoor input W
+              - entity: sensor.trane_heat_pump_compressor_power
+                name: Compressor W
+              - entity: sensor.trane_air_handler_blower_power
+                name: Blower W
           - type: history-graph
             title: Air temperatures (6 h)
             hours_to_show: 6
@@ -59,27 +69,23 @@ views:
                 icon: mdi:code-tags
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_sc360_controller_system_op_status_e
-                name: System Op Status E (raw, disputed)
+                name: System Op Status E (= indoor humidity)
                 icon: mdi:code-tags
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_sc360_controller_zone_mode
                 name: Zone Mode
                 icon: mdi:home-thermometer
               - type: custom:mushroom-entity-card
-                entity: sensor.trane_sc360_controller_sc360_outdoor_temp
-                name: SC360 Outdoor Temp
-                icon: mdi:thermometer
-              - type: custom:mushroom-entity-card
                 entity: sensor.trane_sc360_controller_outdoor_widget_temp
                 name: Outdoor Widget Temp
                 icon: mdi:thermometer-lines
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_sc360_controller_temp_sensor_1
-                name: Drive IPM Temp? (was Temp Sensor 1, 0x410)
+                name: Outdoor Board Temp? (was Temp Sensor 1, 0x410)
                 icon: mdi:thermometer
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_sc360_controller_temp_sensor_2
-                name: Fan IPM Temp? (was Temp Sensor 2, 0x430)
+                name: Outdoor Board Temp 2? (was Temp Sensor 2, 0x430)
                 icon: mdi:thermometer
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_sc360_controller_temp_sensor_3
@@ -103,7 +109,7 @@ views:
                 icon: mdi:home-thermometer
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_thermostat_ux360_indoor_humidity
-                name: Indoor Humidity (disputed source)
+                name: Indoor Humidity
                 icon: mdi:water-percent
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_thermostat_ux360_heat_setpoint_zone_1
@@ -171,11 +177,11 @@ views:
                 icon: mdi:state-machine
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_air_handler_ahu_inlet_air_temp
-                name: Indoor Refrigerant Temp 1? (was AHU Inlet Air, 0x283)
+                name: Indoor Gas Line? °C-scaled (was AHU Inlet Air)
                 icon: mdi:snowflake-thermometer
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_air_handler_indoor_coil_temp
-                name: Indoor Refrigerant Temp 2? (was Indoor Coil, 0x283)
+                name: Indoor Coil Temp (refrigerant)
                 icon: mdi:snowflake-thermometer
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_air_handler_hum_control
@@ -200,7 +206,7 @@ views:
                 icon: mdi:engine
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_heat_pump_compressor_frequency
-                name: Compressor Speed % (was Frequency; 0 when off)
+                name: Compressor Demand % (OdStatus.B, was Frequency)
                 icon: mdi:sine-wave
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_heat_pump_refrigerant_pressure
@@ -212,7 +218,7 @@ views:
                 icon: mdi:gauge
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_heat_pump_suction_temp
-                name: Outdoor Coil Temp? (was Suction Temp)
+                name: Outdoor Coil Temp (was Suction Temp)
                 icon: mdi:thermometer-low
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_heat_pump_refrig_circuit_temp
@@ -226,7 +232,11 @@ views:
             cards:
               - type: custom:mushroom-title-card
                 title: Outdoor Unit – new CB1 signals
-                subtitle: Candidates from uncharted9898 – unverified here
+                subtitle: Checked on this system 2026-09-28 (docs/house/)
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_operating_mode
+                name: Operating Mode (CAN)
+                icon: mdi:hvac
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_heat_pump_compressor_speed_actual
                 name: Compressor Speed Actual
@@ -256,9 +266,17 @@ views:
                 name: Drive DC Voltage
                 icon: mdi:current-dc
               - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_outdoor_fan_speed_request
+                name: Outdoor Fan Speed Request
+                icon: mdi:fan-chevron-up
+              - type: custom:mushroom-entity-card
                 entity: sensor.trane_heat_pump_outdoor_fan_speed
                 name: Outdoor Fan Speed
                 icon: mdi:fan
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_compressor_phase_current
+                name: Compressor Phase Current
+                icon: mdi:current-ac
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_heat_pump_suction_pressure_abs
                 name: Suction Pressure (abs)
@@ -287,7 +305,7 @@ views:
             cards:
               - type: custom:mushroom-title-card
                 title: Air Handler – new CB1 signals
-                subtitle: Unknown = frame not on this bus
+                subtitle: Fan-law checked 2026-09-28
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_air_handler_duct_static_pressure
                 name: Duct Static Pressure
@@ -296,6 +314,10 @@ views:
                 entity: sensor.trane_air_handler_blower_power
                 name: Blower Power
                 icon: mdi:flash
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_blower_speed_request
+                name: Blower Speed Request
+                icon: mdi:fan-chevron-up
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_air_handler_blower_motor_speed
                 name: Blower Motor Speed
