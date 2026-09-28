@@ -36,3 +36,12 @@ Known mislabels (cross-checked against Climate Brain's 2026-09-10
 | Suction Temp | 0x381 float0 | likely outdoor coil temperature |
 | Supply Air Fault = TA_INV_HI | IndoorStatus.E | normal startup token, not a fault |
 | Indoor Humidity (integer E) | SystemOpStatus.E | disputed: uncharted reads E as compressor speed ceiling |
+
+## History
+
+`history/esphome-trane-before-display-test.yaml` is the earlier version. It
+differs from the current file only in the display section: ST7789V at 40 MHz
+without padding, a static "Waiting for CAN" line, and no received-frame counter.
+The current file switched to the ST7735 model (20 MHz, padded) and added the
+`can_rx_count` / `last_can_rx_ms` counter shown on the screen. The CAN, sensor
+and LISTENONLY settings are identical in both.
