@@ -1,0 +1,446 @@
+title: Trane CAN Engineering
+views:
+  - title: Trane CAN
+    path: trane-can
+    icon: mdi:bus
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: custom:mushroom-title-card
+            title: Trane CAN Engineering
+            subtitle: Passive listen-only (firmware CB1) • no CAN write controls exposed
+          - type: thermostat
+            entity: climate.trane_thermostat_ux360_trane_climate
+            name: Trane (display only – control via Nexia zones)
+          - type: history-graph
+            title: Compressor and blower (6 h)
+            hours_to_show: 6
+            entities:
+              - entity: sensor.trane_heat_pump_compressor_demand
+                name: Compressor demand %
+              - entity: sensor.trane_heat_pump_compressor_speed_actual
+                name: Compressor speed actual (rps)
+              - entity: sensor.trane_air_handler_indoor_blower_speed
+                name: Blower %
+          - type: history-graph
+            title: Air temperatures (6 h)
+            hours_to_show: 6
+            entities:
+              - entity: sensor.trane_air_handler_return_air_temp
+                name: Return
+              - entity: sensor.trane_air_handler_supply_air_temp
+                name: Supply
+              - entity: sensor.trane_heat_pump_outdoor_air_temp
+                name: Outdoor
+      - square: false
+        type: grid
+        columns: 2
+        cards:
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: System / SC360
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_system_mode
+                name: System Mode
+                icon: mdi:hvac
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_system_demand_stage
+                name: System Demand Stage
+                icon: mdi:signal
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_system_demand_percent
+                name: System Demand Percent
+                icon: mdi:gauge
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_system_op_status_d
+                name: System Op Status D
+                icon: mdi:code-tags
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_system_op_status_e
+                name: System Op Status E (raw, disputed)
+                icon: mdi:code-tags
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_zone_mode
+                name: Zone Mode
+                icon: mdi:home-thermometer
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_sc360_outdoor_temp
+                name: SC360 Outdoor Temp
+                icon: mdi:thermometer
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_outdoor_widget_temp
+                name: Outdoor Widget Temp
+                icon: mdi:thermometer-lines
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_temp_sensor_1
+                name: Drive IPM Temp? (was Temp Sensor 1, 0x410)
+                icon: mdi:thermometer
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_temp_sensor_2
+                name: Fan IPM Temp? (was Temp Sensor 2, 0x430)
+                icon: mdi:thermometer
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_temp_sensor_3
+                name: Raw 0x450 (was Temp Sensor 3)
+                icon: mdi:thermometer
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Zone 1 and 2
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_zone_1_name
+                name: Zone 1 Name
+                icon: mdi:card-text-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_zone_2_name
+                name: Zone 2 Name
+                icon: mdi:card-text-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_room_temperature
+                name: Room Temperature
+                icon: mdi:home-thermometer
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_indoor_humidity
+                name: Indoor Humidity (disputed source)
+                icon: mdi:water-percent
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_heat_setpoint_zone_1
+                name: Heat Setpoint Zone 1
+                icon: mdi:thermometer-chevron-up
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_cool_setpoint_zone_1
+                name: Cool Setpoint Zone 1
+                icon: mdi:thermometer-chevron-down
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_heat_setpoint_zone_2
+                name: Heat Setpoint Zone 2
+                icon: mdi:thermometer-chevron-up
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_cool_setpoint_zone_2
+                name: Cool Setpoint Zone 2
+                icon: mdi:thermometer-chevron-down
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_zone_1_airflow
+                name: Zone 1 Airflow (allocation %, not damper)
+                icon: mdi:weather-windy
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_zone_1_demand_pct
+                name: Zone 1 Demand Pct
+                icon: mdi:gauge
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_zone_1_state
+                name: Zone 1 State
+                icon: mdi:state-machine
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_hc_status
+                name: HC Status
+                icon: mdi:heat-wave
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_hold_text
+                name: Hold Text
+                icon: mdi:timer-pause-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_schedule_enabled
+                name: Schedule Enabled
+                icon: mdi:calendar-clock
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_setpoint_source
+                name: Setpoint Source
+                icon: mdi:source-branch
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Air Handler
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_return_air_temp
+                name: Return Air Temp
+                icon: mdi:thermometer-chevron-down
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_supply_air_temp
+                name: Supply Air Temp
+                icon: mdi:thermometer-chevron-up
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_indoor_blower_speed
+                name: Indoor Blower Speed (0 when off)
+                icon: mdi:fan
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_indoor_unit_state
+                name: Indoor Unit State
+                icon: mdi:state-machine
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_ahu_inlet_air_temp
+                name: Indoor Refrigerant Temp 1? (was AHU Inlet Air, 0x283)
+                icon: mdi:snowflake-thermometer
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_indoor_coil_temp
+                name: Indoor Refrigerant Temp 2? (was Indoor Coil, 0x283)
+                icon: mdi:snowflake-thermometer
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_hum_control
+                name: Hum Control
+                icon: mdi:water-percent
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_humidifier_status
+                name: Humidifier Status
+                icon: mdi:air-humidifier
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Heat Pump / Outdoor Unit
+                subtitle: Old names kept in entity IDs for Climate Brain
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_outdoor_air_temp
+                name: Outdoor Air Temp
+                icon: mdi:thermometer
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_compressor_demand
+                name: Compressor Demand
+                icon: mdi:engine
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_compressor_frequency
+                name: Compressor Speed % (was Frequency; 0 when off)
+                icon: mdi:sine-wave
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_refrigerant_pressure
+                name: Line Voltage (was Refrigerant Pressure)
+                icon: mdi:flash
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_discharge_temp
+                name: Suction Pressure abs (was Discharge Temp)
+                icon: mdi:gauge
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_suction_temp
+                name: Outdoor Coil Temp? (was Suction Temp)
+                icon: mdi:thermometer-low
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_refrig_circuit_temp
+                name: Speed Reference ~55 (was Refrig Circuit Temp)
+                icon: mdi:speedometer
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_refrig_sensor_b
+                name: Constant 50 (was Refrig Sensor B)
+                icon: mdi:flask-outline
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Outdoor Unit – new CB1 signals
+                subtitle: Candidates from uncharted9898 – unverified here
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_compressor_speed_actual
+                name: Compressor Speed Actual
+                icon: mdi:rotate-right
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_compressor_speed_request
+                name: Compressor Speed Request
+                icon: mdi:rotate-right
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_compressor_power
+                name: Compressor Power
+                icon: mdi:flash
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_outdoor_input_power
+                name: Outdoor Input Power
+                icon: mdi:flash
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_outdoor_input_current
+                name: Outdoor Input Current
+                icon: mdi:current-ac
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_line_voltage
+                name: Line Voltage
+                icon: mdi:flash-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_drive_dc_voltage
+                name: Drive DC Voltage
+                icon: mdi:current-dc
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_outdoor_fan_speed
+                name: Outdoor Fan Speed
+                icon: mdi:fan
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_suction_pressure_abs
+                name: Suction Pressure (abs)
+                icon: mdi:gauge-low
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_liquid_pressure_abs
+                name: Liquid Pressure (abs)
+                icon: mdi:gauge-full
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_compressor_discharge_temp
+                name: Compressor Discharge Temp
+                icon: mdi:thermometer-high
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_suction_line_temp
+                name: Suction Line Temp
+                icon: mdi:thermometer-low
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_liquid_line_temp
+                name: Liquid Line Temp
+                icon: mdi:thermometer
+              - type: custom:mushroom-entity-card
+                entity: binary_sensor.trane_heat_pump_stator_heat_active
+                name: Stator Heat Active
+                icon: mdi:radiator
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Air Handler – new CB1 signals
+                subtitle: Unknown = frame not on this bus
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_duct_static_pressure
+                name: Duct Static Pressure
+                icon: mdi:gauge
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_blower_power
+                name: Blower Power
+                icon: mdi:flash
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_blower_motor_speed
+                name: Blower Motor Speed
+                icon: mdi:fan
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Weather Data on Trane Bus
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_weather_city
+                name: Weather City
+                icon: mdi:city
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_weather_zip
+                name: Weather ZIP
+                icon: mdi:map-marker
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_weather_current_temp
+                name: Weather Current Temp
+                icon: mdi:thermometer
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_weather_feels_like
+                name: Weather Feels Like
+                icon: mdi:thermometer-auto
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_weather_humidity
+                name: Weather Humidity
+                icon: mdi:water-percent
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_weather_forecast_high
+                name: Weather Forecast High
+                icon: mdi:thermometer-high
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_weather_forecast_low
+                name: Weather Forecast Low
+                icon: mdi:thermometer-low
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_weather_condition_code
+                name: Weather Condition Code
+                icon: mdi:weather-partly-cloudy
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_weather_data_status
+                name: Weather Data Status
+                icon: mdi:cloud-check-outline
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Presets
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_preset_home_heat
+                name: Preset Home Heat
+                icon: mdi:home-thermometer-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_preset_home_cool
+                name: Preset Home Cool
+                icon: mdi:home-snowflake-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_preset_away_heat
+                name: Preset Away Heat
+                icon: mdi:exit-run
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_preset_away_cool
+                name: Preset Away Cool
+                icon: mdi:exit-run
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_preset_sleep_heat
+                name: Preset Sleep Heat
+                icon: mdi:sleep
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_preset_sleep_cool
+                name: Preset Sleep Cool
+                icon: mdi:sleep
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Alarms / Faults
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_active_alarm_id
+                name: Active Alarm ID
+                icon: mdi:alert-circle-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_active_alarm_origin
+                name: Active Alarm Origin
+                icon: mdi:alert-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_active_alarm_level
+                name: Active Alarm Level
+                icon: mdi:alert-decagram-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_active_alarm_id_2
+                name: Active Alarm ID 2
+                icon: mdi:alert-circle-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_active_alarm_origin_2
+                name: Active Alarm Origin 2
+                icon: mdi:alert-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_heat_pump_od_fault_code
+                name: OD Fault Code
+                icon: mdi:alert-octagon-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_air_handler_supply_air_fault
+                name: Indoor Status Token (TA_INV_HI = normal start)
+                icon: mdi:alert-box-outline
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Equipment / Versioning
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_unit_model
+                name: Unit Model
+                icon: mdi:information-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_unit_serial
+                name: Unit Serial
+                icon: mdi:identifier
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_unit_firmware
+                name: Unit Firmware
+                icon: mdi:chip
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_config_version
+                name: Config Version
+                icon: mdi:cog-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_alarm_db_version
+                name: Alarm DB Version
+                icon: mdi:database-outline
+          - type: vertical-stack
+            cards:
+              - type: custom:mushroom-title-card
+                title: Raw JSON / Diagnostics
+              - type: custom:mushroom-entity-card
+                entity: sensor.esphome_trane_can_frames_received
+                name: CAN Frames Received
+                icon: mdi:counter
+              - type: custom:mushroom-entity-card
+                entity: sensor.esphome_trane_esphome_trane_wifi_signal
+                name: ESPHome Trane WiFi Signal
+                icon: mdi:wifi
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_last_json_641
+                name: Last JSON 641
+                icon: mdi:code-json
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_sc360_controller_last_json_649
+                name: Last JSON 649
+                icon: mdi:code-json
