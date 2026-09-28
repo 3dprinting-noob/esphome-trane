@@ -9,7 +9,7 @@ views:
         cards:
           - type: custom:mushroom-title-card
             title: Trane CAN Engineering
-            subtitle: Passive listen-only (firmware CB2) • no CAN write controls exposed
+            subtitle: Passive listen-only (firmware CB2.1) • no CAN write controls exposed
           - type: thermostat
             entity: climate.trane_thermostat_ux360_trane_climate
             name: Trane (display only – control via Nexia zones)
@@ -129,8 +129,24 @@ views:
                 icon: mdi:thermometer-chevron-down
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_thermostat_ux360_zone_1_airflow
-                name: Zone 1 Airflow (allocation %, not damper)
+                name: Zone 1 Damper Command (JSON E)
                 icon: mdi:weather-windy
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_zone_1_damper_command
+                name: Zone 1 Damper Command (0x250)
+                icon: mdi:valve
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_zone_1_damper_position
+                name: Zone 1 Damper Position (0x2C8)
+                icon: mdi:valve
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_zone_2_damper_command
+                name: Zone 2 Damper Command (0x250)
+                icon: mdi:valve
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_zone_2_damper_position
+                name: Zone 2 Damper Position (0x2C8)
+                icon: mdi:valve
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_thermostat_ux360_zone_1_demand_pct
                 name: Zone 1 Demand Pct

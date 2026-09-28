@@ -6,6 +6,8 @@
 # blower-speed effect (fan law: pressure ∝ rpm²). Baseline from the
 # 2026-09-28 capture, all vents as normal: 0.273 cooling, 0.276 heating
 # (range 0.26–0.29). Closing vents should raise it; changes under ~0.03 are noise.
+# A zone damper closing below ~10 % raised it to 0.31 (12:48, 2026-09-28).
+# Damper entities need firmware CB2.1.
 type: grid
 cards:
   - type: custom:mushroom-title-card
@@ -45,6 +47,22 @@ cards:
     entity: sensor.trane_air_handler_blower_power
     name: Blower power
     icon: mdi:flash
+  - type: custom:mushroom-entity-card
+    entity: sensor.trane_thermostat_ux360_zone_1_damper_position
+    name: Zone 1 damper
+    icon: mdi:valve
+  - type: custom:mushroom-entity-card
+    entity: sensor.trane_thermostat_ux360_zone_2_damper_position
+    name: Zone 2 damper
+    icon: mdi:valve
+  - type: history-graph
+    title: Zone dampers (3 h)
+    hours_to_show: 3
+    entities:
+      - entity: sensor.trane_thermostat_ux360_zone_1_damper_position
+        name: Zone 1 %
+      - entity: sensor.trane_thermostat_ux360_zone_2_damper_position
+        name: Zone 2 %
   - type: history-graph
     title: Static pressure (3 h)
     hours_to_show: 3

@@ -69,6 +69,17 @@ equipment), the difference is called out.
 | 0x491–0x495 f0 | Zone 2–6 temperature slots | Raw | Constant 70.0 for 3 h (placeholders?) |
 | 0x4B2 f0/f1 | Unknown pair | Raw | Constant 70 / 70 |
 
+## Zone dampers (`evidence/2026-09-28-zone-dampers.md`)
+
+| Field | Meaning | Confidence | Evidence |
+|---|---|---|---|
+| 0x250 b0 / b1 | Zone 1 / Zone 2 damper command, % | Confirmed | = JSON ZoneStatus.n.E at 27/27 and 121/121 updates |
+| 0x2C8 b1 / b3 | Zone 1 / Zone 2 damper position, % | Strong | ramps after the command at ~1.5 %/s |
+| 0x250 b2, 0x2C8 b5 | Zone 3 slot (100) | Raw | no third zone |
+| ZoneStatus.n.HcStatus (JSON) | 1 idle, 2 cool, 3 heat, 4 end, C satisfied | Candidate | sequence only |
+
+Zone 2 closing below ~10 % (satisfied) raised duct resistance 0.275 → 0.31.
+
 ## Bus / network
 
 - 101 standard IDs, ~37 frames/s. CANopen heartbeats 0x701–0x706: **six nodes**

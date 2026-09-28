@@ -9,6 +9,8 @@
 #   - New: Operating Mode (0x281 b7), Outdoor Fan Speed Request (0x281 u16@0),
 #     Blower Speed Request (0x200 u16@2), Compressor Phase Current (0x388 f0).
 #     (Existing "Indoor Coil Temp" = 0x283 f1 is the indoor coil refrigerant temperature.)
+#   - CB2.1: Zone 1/2 Damper Command (0x250 b0/b1 = JSON ZoneStatus.n.E) and
+#     Zone 1/2 Damper Position (0x2C8 b1/b3), docs/house/evidence/2026-09-28-zone-dampers.md.
 #
 # ---- CB1 notes ----
 #
@@ -27,7 +29,7 @@
 #     (a different Trane system; unverified here until the capture is analysed).
 #   - OTA and web page passwords (secrets ota_password, web_password).
 substitutions:
-  version: "cb2-listen-2026.09.28"
+  version: "cb2.1-listen-2026.09.28"
 
 esphome:
   name: esphome-trane
@@ -941,6 +943,38 @@ sensor:
     device_id: dev_air_handler
 
   - platform: template
+    name: "Zone 1 Damper Command"
+    id: z1_damper_cmd
+    unit_of_measurement: "%"
+    state_class: measurement
+    accuracy_decimals: 0
+    device_id: dev_thermostat
+
+  - platform: template
+    name: "Zone 2 Damper Command"
+    id: z2_damper_cmd
+    unit_of_measurement: "%"
+    state_class: measurement
+    accuracy_decimals: 0
+    device_id: dev_thermostat
+
+  - platform: template
+    name: "Zone 1 Damper Position"
+    id: z1_damper_pos
+    unit_of_measurement: "%"
+    state_class: measurement
+    accuracy_decimals: 0
+    device_id: dev_thermostat
+
+  - platform: template
+    name: "Zone 2 Damper Position"
+    id: z2_damper_pos
+    unit_of_measurement: "%"
+    state_class: measurement
+    accuracy_decimals: 0
+    device_id: dev_thermostat
+
+  - platform: template
     name: "Outdoor Fan Speed Request"
     id: cand_od_fan_request
     unit_of_measurement: "rpm"
@@ -1828,6 +1862,22 @@ canbus:
               if (x.size() < 4) return;
               float v; memcpy(&v, &x[0], 4);
               if (v >= 0 && v < 200) id(cand_comp_speed_request).publish_state(v);
+
+      - can_id: 0x250
+        can_id_mask: 0x7FF
+        then:
+          - lambda: |-
+              if (x.size() < 2) return;
+              if (x[0] <= 100 && id(z1_damper_cmd).state != x[0]) id(z1_damper_cmd).publish_state(x[0]);
+              if (x[1] <= 100 && id(z2_damper_cmd).state != x[1]) id(z2_damper_cmd).publish_state(x[1]);
+
+      - can_id: 0x2C8
+        can_id_mask: 0x7FF
+        then:
+          - lambda: |-
+              if (x.size() < 4) return;
+              if (x[1] <= 100 && id(z1_damper_pos).state != x[1]) id(z1_damper_pos).publish_state(x[1]);
+              if (x[3] <= 100 && id(z2_damper_pos).state != x[3]) id(z2_damper_pos).publish_state(x[3]);
 
       - can_id: 0x490
         can_id_mask: 0x7FF

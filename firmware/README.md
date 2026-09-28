@@ -116,5 +116,5 @@ bash pi_trane_capture_pack.sh 6     # last 6 hours
 indoor humidity from continuous binary frames; SystemOpStatus.E treated as
 humidity ("SC360 Outdoor Temp" no longer updates); Compressor Power in W; new
 Operating Mode, Outdoor Fan Speed Request, Blower Speed Request and Compressor
-Phase Current. Same install path as CB1 (paste, Save, Install → Wirelessly;
+Phase Current. CB2.1 adds Zone 1/2 Damper Command (0x250) and Position (0x2C8). Same install path as CB1 (paste, Save, Install → Wirelessly;
 OTA now uses `ota_password`). `esphome config` valid (2026.6.5).
