@@ -1,0 +1,59 @@
+# Home dashboard section: duct static pressure (sections view).
+# Add: Home dashboard → ✏️ → "+ Add section" → section ⋮ → Edit in YAML →
+# replace everything with this file → Save → Done.
+#
+# Duct resistance = static pressure ÷ (blower rpm / 1000)². It removes the
+# blower-speed effect (fan law: pressure ∝ rpm²). Baseline from the
+# 2026-09-28 capture, all vents as normal: 0.273 cooling, 0.276 heating
+# (range 0.26–0.29). Closing vents should raise it; changes under ~0.03 are noise.
+type: grid
+cards:
+  - type: custom:mushroom-title-card
+    title: Duct static pressure
+    subtitle: Trane CAN 0x310 • resistance baseline 0.27 (2026-09-28)
+  - type: custom:mushroom-template-card
+    entity: sensor.trane_air_handler_duct_static_pressure
+    primary: Static pressure
+    secondary: >-
+      {% set p = states('sensor.trane_air_handler_duct_static_pressure') | float(0) %}
+      {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float(0) %}
+      {% if r < 300 %}Blower off{% else %}{{ '%.2f' | format(p) }} inWC at {{ r | round(0) | int }} rpm{% endif %}
+    icon: mdi:gauge
+    icon_color: >-
+      {% set p = states('sensor.trane_air_handler_duct_static_pressure') | float(0) %}
+      {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float(0) %}
+      {% if r < 300 %}grey{% elif p < 0.5 %}green{% elif p < 0.8 %}amber{% else %}red{% endif %}
+    tap_action:
+      action: more-info
+  - type: custom:mushroom-template-card
+    entity: sensor.trane_air_handler_duct_static_pressure
+    primary: Duct resistance
+    secondary: >-
+      {% set p = states('sensor.trane_air_handler_duct_static_pressure') | float(0) %}
+      {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float(0) %}
+      {% if r < 900 or p <= 0.05 %}Needs blower running (≥ 900 rpm){% else %}{% set k = p / (r / 1000) ** 2 %}{{ '%.3f' | format(k) }} (baseline 0.27, {{ '%+.3f' | format(k - 0.274) }}){% endif %}
+    icon: mdi:air-filter
+    icon_color: >-
+      {% set p = states('sensor.trane_air_handler_duct_static_pressure') | float(0) %}
+      {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float(0) %}
+      {% if r < 900 or p <= 0.05 %}grey{% else %}{% set d = p / (r / 1000) ** 2 - 0.274 %}{% if d > 0.03 %}red{% elif d < -0.03 %}blue{% else %}green{% endif %}{% endif %}
+  - type: custom:mushroom-entity-card
+    entity: sensor.trane_air_handler_blower_motor_speed
+    name: Blower speed
+    icon: mdi:fan
+  - type: custom:mushroom-entity-card
+    entity: sensor.trane_air_handler_blower_power
+    name: Blower power
+    icon: mdi:flash
+  - type: history-graph
+    title: Static pressure (3 h)
+    hours_to_show: 3
+    entities:
+      - entity: sensor.trane_air_handler_duct_static_pressure
+        name: Static inWC
+  - type: history-graph
+    title: Blower (3 h)
+    hours_to_show: 3
+    entities:
+      - entity: sensor.trane_air_handler_blower_motor_speed
+        name: Blower rpm
