@@ -1,6 +1,7 @@
-# Home dashboard section: duct static pressure (sections view).
-# Add: Home dashboard → ✏️ → "+ Add section" → section ⋮ → Edit in YAML →
-# replace everything with this file → Save → Done.
+# Home Climate dashboard: duct static pressure card (square tiles + square graphs).
+# Replace: Home Climate dashboard → ✏️ → on the old static-pressure card ⋮ → Edit →
+# "Show code editor" → select all, paste this file → Save → Done.
+# Works in masonry and sections views (in sections it spans the full section width).
 #
 # Duct resistance = static pressure ÷ (blower rpm / 1000)². It removes the
 # blower-speed effect (fan law: pressure ∝ rpm²). Baseline from the
@@ -8,70 +9,115 @@
 # (range 0.26–0.29). Closing vents should raise it; changes under ~0.03 are noise.
 # A zone damper closing below ~10 % raised it to 0.31 (12:48, 2026-09-28).
 # Damper entities need firmware CB2.1.
-type: grid
+type: vertical-stack
+grid_options:
+  columns: full
 cards:
   - type: custom:mushroom-title-card
     title: Duct static pressure
-    subtitle: Trane CAN 0x310 • resistance baseline 0.27 (2026-09-28)
-  - type: custom:mushroom-template-card
-    entity: sensor.trane_air_handler_duct_static_pressure
-    primary: Static pressure
-    secondary: >-
-      {% set p = states('sensor.trane_air_handler_duct_static_pressure') | float(0) %}
-      {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float(0) %}
-      {% if r < 300 %}Blower off{% else %}{{ '%.2f' | format(p) }} inWC at {{ r | round(0) | int }} rpm{% endif %}
-    icon: mdi:gauge
-    icon_color: >-
-      {% set p = states('sensor.trane_air_handler_duct_static_pressure') | float(0) %}
-      {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float(0) %}
-      {% if r < 300 %}grey{% elif p < 0.5 %}green{% elif p < 0.8 %}amber{% else %}red{% endif %}
-    tap_action:
-      action: more-info
-  - type: custom:mushroom-template-card
-    entity: sensor.trane_air_handler_duct_static_pressure
-    primary: Duct resistance
-    secondary: >-
-      {% set p = states('sensor.trane_air_handler_duct_static_pressure') | float(0) %}
-      {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float(0) %}
-      {% if r < 900 or p <= 0.05 %}Needs blower running (≥ 900 rpm){% else %}{% set k = p / (r / 1000) ** 2 %}{{ '%.3f' | format(k) }} (baseline 0.27, {{ '%+.3f' | format(k - 0.274) }}){% endif %}
-    icon: mdi:air-filter
-    icon_color: >-
-      {% set p = states('sensor.trane_air_handler_duct_static_pressure') | float(0) %}
-      {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float(0) %}
-      {% if r < 900 or p <= 0.05 %}grey{% else %}{% set d = p / (r / 1000) ** 2 - 0.274 %}{% if d > 0.03 %}red{% elif d < -0.03 %}blue{% else %}green{% endif %}{% endif %}
-  - type: custom:mushroom-entity-card
-    entity: sensor.trane_air_handler_blower_motor_speed
-    name: Blower speed
-    icon: mdi:fan
-  - type: custom:mushroom-entity-card
-    entity: sensor.trane_air_handler_blower_power
-    name: Blower power
-    icon: mdi:flash
-  - type: custom:mushroom-entity-card
-    entity: sensor.trane_thermostat_ux360_zone_1_damper_position
-    name: Zone 1 damper
-    icon: mdi:valve
-  - type: custom:mushroom-entity-card
-    entity: sensor.trane_thermostat_ux360_zone_2_damper_position
-    name: Zone 2 damper
-    icon: mdi:valve
-  - type: history-graph
-    title: Zone dampers (3 h)
-    hours_to_show: 3
-    entities:
-      - entity: sensor.trane_thermostat_ux360_zone_1_damper_position
-        name: Zone 1 %
-      - entity: sensor.trane_thermostat_ux360_zone_2_damper_position
-        name: Zone 2 %
-  - type: history-graph
-    title: Static pressure (3 h)
-    hours_to_show: 3
-    entities:
-      - entity: sensor.trane_air_handler_duct_static_pressure
-        name: Static inWC
-  - type: history-graph
-    title: Blower (3 h)
-    hours_to_show: 3
-    entities:
-      - entity: sensor.trane_air_handler_blower_motor_speed
-        name: Blower rpm
+    subtitle: Resistance baseline 0.27 (all vents open)
+
+  # --- value tiles: 3 × 2 squares, value large, label underneath ---
+  - type: grid
+    columns: 3
+    square: true
+    cards:
+      - type: custom:mushroom-template-card
+        entity: sensor.trane_air_handler_duct_static_pressure
+        layout: vertical
+        fill_container: true
+        icon: mdi:gauge
+        primary: >-
+          {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float(0) %}
+          {% if r < 300 %}Off{% else %}{{ '%.2f' | format(states('sensor.trane_air_handler_duct_static_pressure') | float(0)) }} inWC{% endif %}
+        secondary: Static pressure
+        icon_color: >-
+          {% set p = states('sensor.trane_air_handler_duct_static_pressure') | float(0) %}
+          {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float(0) %}
+          {% if r < 300 %}grey{% elif p < 0.5 %}green{% elif p < 0.8 %}amber{% else %}red{% endif %}
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-template-card
+        entity: sensor.trane_air_handler_duct_static_pressure
+        layout: vertical
+        fill_container: true
+        icon: mdi:air-filter
+        primary: >-
+          {% set p = states('sensor.trane_air_handler_duct_static_pressure') | float(0) %}
+          {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float(0) %}
+          {% if r < 900 or p <= 0.05 %}—{% else %}{% set k = p / (r / 1000) ** 2 %}{{ '%.3f' | format(k) }} ({{ '%+.2f' | format(k - 0.274) }}){% endif %}
+        secondary: Duct resistance
+        icon_color: >-
+          {% set p = states('sensor.trane_air_handler_duct_static_pressure') | float(0) %}
+          {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float(0) %}
+          {% if r < 900 or p <= 0.05 %}grey{% else %}{% set d = p / (r / 1000) ** 2 - 0.274 %}{% if d > 0.03 %}red{% elif d < -0.03 %}blue{% else %}green{% endif %}{% endif %}
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-entity-card
+        entity: sensor.trane_air_handler_blower_motor_speed
+        layout: vertical
+        fill_container: true
+        primary_info: state
+        secondary_info: name
+        name: Blower speed
+        icon: mdi:fan
+        icon_color: blue
+      - type: custom:mushroom-entity-card
+        entity: sensor.trane_air_handler_blower_power
+        layout: vertical
+        fill_container: true
+        primary_info: state
+        secondary_info: name
+        name: Blower power
+        icon: mdi:flash
+        icon_color: amber
+      - type: custom:mushroom-entity-card
+        entity: sensor.trane_thermostat_ux360_zone_1_damper_position
+        layout: vertical
+        fill_container: true
+        primary_info: state
+        secondary_info: name
+        name: Zone 1 damper
+        icon: mdi:valve
+        icon_color: indigo
+      - type: custom:mushroom-entity-card
+        entity: sensor.trane_thermostat_ux360_zone_2_damper_position
+        layout: vertical
+        fill_container: true
+        primary_info: state
+        secondary_info: name
+        name: Zone 2 damper
+        icon: mdi:valve
+        icon_color: orange
+
+  # --- graphs: 2 × 2, roughly square ---
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: history-graph
+        title: Static pressure
+        hours_to_show: 3
+        entities:
+          - entity: sensor.trane_air_handler_duct_static_pressure
+            name: inWC
+      - type: history-graph
+        title: Blower speed
+        hours_to_show: 3
+        entities:
+          - entity: sensor.trane_air_handler_blower_motor_speed
+            name: rpm
+      - type: history-graph
+        title: Zone dampers
+        hours_to_show: 3
+        entities:
+          - entity: sensor.trane_thermostat_ux360_zone_1_damper_position
+            name: Zone 1
+          - entity: sensor.trane_thermostat_ux360_zone_2_damper_position
+            name: Zone 2
+      - type: history-graph
+        title: Blower power
+        hours_to_show: 3
+        entities:
+          - entity: sensor.trane_air_handler_blower_power
+            name: W
