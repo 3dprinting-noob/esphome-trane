@@ -21,7 +21,7 @@ equipment), the difference is called out.
 | OdStatus.B (JSON) | Demand-type %, **not Hz** (entity "Compressor Frequency") | Strong | 99 at 26 rps (cool) and at 57 rps (heat) |
 | 0x281 b7 | Operating mode: 0 idle, 1 cooling, 2 heating | Strong | Constant per phase. **uncharted reads it as blower-active flag** |
 | 0x385 f0 | Compressor power, **W** | Strong | ~560 W cool / ~3000 W heat, always below 0x38C f1 input power. **uncharted used kW**; CB1 filter (<20) drops every running value — fixed in CB2 |
-| 0x385 f1 | Unknown | Raw | 0 idle, ~24 cool, ~160 heat — not a speed ceiling here |
+| 0x385 f1 | Unknown (uncharted: compressor speed ceiling) | Raw | 0 idle, ~24 cool, ~152–165 heat. **Emits a literal 65535 startup sentinel** (seen 2026-09-28, matches uncharted) — filter if ever published |
 | 0x38C f1 | Outdoor input power, W | Confirmed | 17–22 W standby, ~630 W cool, ~3340 W heat; = V × I (0x38F f0 × 0x389 f1) within 3 % |
 | 0x389 f1 | Outdoor input current, A | Confirmed | 2.7 A cool / 13.9 A heat, consistent with power/voltage |
 | 0x38F f0 | Line voltage, V (entity "Refrigerant Pressure") | Confirmed | 234–243 V, sags ~2 V under 3.3 kW |
@@ -41,7 +41,8 @@ equipment), the difference is called out.
 | 0x380 f1 | Outdoor air temperature, °F | Confirmed | Matches ambient; f0 always −99 (unavailable) |
 | 0x386 | f0 = 2, f1 = 50 constants (entity "Refrig Sensor B" = f1) | Confirmed constant | |
 | 0x282 b1 | Stator heat active | Candidate | 0 throughout (no stator-heat cycle in 3 h at 61–68 °F) |
-| 0x3D0 f1 | Compressor minimum speed, rps | Strong | 18.8–19.3 constant |
+| 0x3D0 f1 | **Temperature-like, probably °C near equipment** (≈66 °F) | Candidate (was "compressor minimum speed") | 18.8 idle → ~19.2 while the compressor/blower run, in cooling **and** heating, decaying after. r = +0.80 with compressor rps, −0.86 with zone 1 room. dewbot6 decodes 0x3D0 as wireless remote sensors (bytes 4–7 = sensor 1, °C): **not confirmed here** — does not behave like a conditioned-room temperature, and no wireless sensor serial seen (`evidence/2026-09-30-upstream-confirmation.md`) |
+| 0x3D0 f0 | Empty slot | Confirmed constant | 0.0 throughout (dewbot6: unpaired slot) |
 | 0x410 f0/f1, 0x430 f0, 0x460 f0 | Outdoor electronics temperatures? | Candidate | 76–93 °F, nearly flat even at 3.3 kW — **not** the drive IPM trend uncharted saw |
 | 0x430 f1, 0x450 f0/f1 | Unknown | Raw | Noisy 237–362 in every phase |
 
@@ -49,9 +50,10 @@ equipment), the difference is called out.
 
 | Field | Meaning | Confidence | Evidence |
 |---|---|---|---|
-| 0x200 u16@2 | Blower speed request, rpm | Strong | ≈ 19.9 × IndoorStatus.E % (e.g. 89 % → 1771); leads 0x318 by ~6 s |
+| 0x200 u16@2 | Blower speed request, rpm | Confirmed | = 19.97 × IndoorStatus.E % (r = 0.999, 2026-09-28); leads 0x318 by ~6 s |
 | 0x318 u16@4 | Blower motor speed actual, rpm | Strong | Follows request; 1100–1160 cool, 1300–1810 heat |
-| IndoorStatus.E (JSON) | Blower % (numeric) or startup token `TA_INV_HI` | Confirmed | Token at start of run, numeric after |
+| IndoorStatus.E (JSON) | **Blower speed request %** (numeric) or startup token `TA_INV_HI` | Confirmed | Request, not measured speed: E > 0 while 0x318 motor = 0 at 3/3 starts (matches uncharted); 16:30 on 09-28 E = 35 % while the motor ran 1,997 rpm. Entity "Indoor Blower Speed" is the request |
+| 0x318 u16@6 | Tracks duct static pressure (0x310) | Candidate | rho = +1.00 with 0x310 f0 over 4.4 h; uncharted: "motor-adjacent, unresolved" |
 | 0x320 f0 | Blower power, W | Strong | ~180 W at 1150 rpm, ~665 W at 1800 rpm: ratio 3.7 vs fan-law 3.8 |
 | 0x310 f0 | Duct static pressure, inWC | Strong | median 0.35 cool, 0.75 heat (0.5–0.9); ratio 2.14 vs fan-law (rpm²) 2.11 on median blower speed. Higher than both community systems (0.09–0.19) |
 | 0x308 f0 / f1 | Return / supply air, °F | Confirmed | ΔT ~18 °F cool, ~30 °F heat |
@@ -82,7 +84,10 @@ Zone 2 closing below ~10 % (satisfied) raised duct resistance 0.275 → 0.31.
 
 ## Bus / network
 
-- 101 standard IDs, ~37 frames/s. CANopen heartbeats 0x701–0x706: **six nodes**
+- 101 standard IDs, ~37 frames/s. CANopen heartbeats 0x701–0x706: **six nodes**.
+  **Node 5 (0x705) is the zone panel** (dewbot6's zone-panel map, confirmed 2026-09-30): its TPDOs
+  0x2C0/0x2C4/0x2C8/0x2CC/0x2D0 are all present (0x2CC = `05000000`), and the SC360 keeps scanning for a
+  second panel with LSS on 0x7E4/0x7E5 (2,974 frames in 4.4 h)
   (uncharted documents 0x701–0x705); the extra node is unidentified — possibly
   the gas furnace side of the dual-fuel plant.
 - JSON via SDO pairs 0x601/0x581, 0x621/0x5A1, 0x641/0x5C1, 0x649/0x5C9, as
