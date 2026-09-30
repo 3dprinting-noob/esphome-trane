@@ -1,18 +1,17 @@
-# Duct static node, custom PCB rev B (JLCPCB): ESP32-C3-MINI-1-N4 + Sensirion SDP31.
-# I2C: GPIO4 = SDA, GPIO5 = SCL (4.7k pull-ups on the board). USB-C = native
-# USB Serial/JTAG (logs and first flash). Separate device from esphome-trane (no CAN).
-# + port = supply plenum, - port = return (room side of filter) -> TESP.
+# REV A PROTOTYPE: SDP31 breakout + ESP32-DevKitC (GPIO21/22). Custom PCB (rev B) = duct-static.yaml.
+# Separate device from esphome-trane (no CAN). + port = supply plenum,
+# − port = return plenum -> total external static pressure (TESP).
+# Secrets come from Device Builder's secrets.yaml (same ota/wifi keys).
 esphome:
   name: duct-static
   friendly_name: Duct Static
 
 esp32:
-  board: esp32-c3-devkitm-1
+  board: esp32dev
   framework:
     type: esp-idf
 
 logger:
-  hardware_uart: USB_SERIAL_JTAG
 
 api:
   encryption:
@@ -31,14 +30,14 @@ wifi:
 captive_portal:
 
 i2c:
-  sda: GPIO4
-  scl: GPIO5
+  sda: GPIO21
+  scl: GPIO22
   frequency: 100kHz
   scan: true
 
 sensor:
   # ESPHome reports SDP3x/SDP8xx in hPa and auto-detects the model.
-  # SDP31: 0x21 (ADDR to GND on the board).
+  # SDP31 / SDP32: 0x21 (ADDR to GND). SDP810-500Pa: 0x25.
   - platform: sdp3x
     id: duct_static_pa
     name: "Pressure"
