@@ -108,6 +108,13 @@ bash pi_trane_capture_pack.sh 6     # last 6 hours
 - 2026-09-28 10:14 -04:00 — Kitchen Pi recorder running (`trane-capture.service`,
   no API key): 1,106 CAN frames + 4 JSON messages in the first 30 s
   (~37 frames/s, ~10 KB/s of JSONL before daily compression). Pi has 23 GB free.
+- Reported 2026-09-30 by the household: the device now runs **CB2.1**
+  (`esphome-trane.cb2.yaml`, version `cb2.1-listen-2026.09.28`, LISTENONLY),
+  installed from the Home Assistant ESPHome Device Builder app. The config is
+  named `esphome-trane.yaml` in Device Builder. Install time and compile stats
+  were not recorded. Whether the Device Builder copy is byte-identical to
+  `esphome-trane.cb2.yaml` has not been checked; secrets and `use_address`
+  may differ.
 
 ## Profile CB2 (2026-09-28)
 
