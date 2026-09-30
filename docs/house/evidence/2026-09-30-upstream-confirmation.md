@@ -30,3 +30,12 @@ Tool: `3dprinting-noob/climate-brain`
   reboots (the OTA installs).
 - **CB2.1 unit bug.** `Compressor Power` carries W but is labelled kW
   (running median 551, max 3,147).
+
+## Update — household, 2026-09-30
+
+The household has a Trane wireless remote sensor paired. It may be out of
+range, and "66 °F is an old value". It will be repositioned the same day,
+and 0x3D0 will be retested with a fresh Pi capture: slot 2 should step to
+the new room's temperature and then track it. Until then the 0x3D0 f1 row
+stays Candidate. Two things point against a completely stale value: 768
+distinct values and a ~0.4 °C rise whenever the plant ran.
