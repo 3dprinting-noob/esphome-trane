@@ -1,0 +1,86 @@
+# Home Assistant package for the two duct boards (drawing DS-01 rev B).
+# Put in /config/packages/ (packages: !include_dir_named packages), restart.
+# Resistances divide by (blower rpm / 1000)^2, so they stay comparable at any
+# blower speed (fan law: pressure goes with the square of airflow).
+input_number:
+  filter_clean_resistance:
+    name: Filter resistance when clean
+    min: 0
+    max: 1
+    step: 0.001
+    mode: box
+    unit_of_measurement: "inWC/krpm²"
+    icon: mdi:air-filter
+
+input_button:
+  filter_record_clean_baseline:
+    name: Record clean-filter baseline
+    icon: mdi:air-filter
+
+template:
+  - sensor:
+      - name: "Supply Duct Resistance"
+        unique_id: supply_duct_resistance
+        unit_of_measurement: "inWC/krpm²"
+        state_class: measurement
+        availability: >
+          {{ states('sensor.duct_supply_pressure_inwc') | float(none) is number
+             and states('sensor.trane_air_handler_blower_motor_speed') | float(0) > 600 }}
+        state: >
+          {% set s = states('sensor.duct_supply_pressure_inwc') | float %}
+          {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float %}
+          {{ (s / (r / 1000) ** 2) | round(3) }}
+      - name: "Filter Resistance"
+        unique_id: filter_resistance
+        unit_of_measurement: "inWC/krpm²"
+        state_class: measurement
+        availability: >
+          {{ states('sensor.filter_pressure_drop_inwc') | float(none) is number
+             and states('sensor.trane_air_handler_blower_motor_speed') | float(0) > 600 }}
+        state: >
+          {% set d = states('sensor.filter_pressure_drop_inwc') | float %}
+          {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float %}
+          {{ (d / (r / 1000) ** 2) | round(4) }}
+      - name: "Filter Loading"
+        unique_id: filter_loading
+        unit_of_measurement: "%"
+        state_class: measurement
+        icon: mdi:air-filter
+        availability: >
+          {{ states('sensor.filter_resistance') | float(none) is number
+             and states('input_number.filter_clean_resistance') | float(0) > 0 }}
+        state: >
+          {{ (states('sensor.filter_resistance') | float
+              / states('input_number.filter_clean_resistance') | float * 100) | round(0) }}
+
+automation:
+  - id: filter_record_clean_baseline
+    alias: Filter - record clean baseline
+    description: Press after fitting a new filter, with the blower running steadily.
+    triggers:
+      - trigger: state
+        entity_id: input_button.filter_record_clean_baseline
+    conditions:
+      - condition: template
+        value_template: "{{ states('sensor.filter_resistance') | float(none) is number }}"
+    actions:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.filter_clean_resistance
+        data:
+          value: "{{ states('sensor.filter_resistance') | float }}"
+  - id: filter_change_reminder
+    alias: Filter - change reminder
+    description: Notifies when the filter's resistance has stayed above double its clean value for 6 hours.
+    triggers:
+      - trigger: numeric_state
+        entity_id: sensor.filter_loading
+        above: 200
+        for: "06:00:00"
+    actions:
+      - action: persistent_notification.create
+        data:
+          title: Air filter
+          message: >
+            Filter resistance is {{ states('sensor.filter_loading') }} % of its clean value.
+            Time to change it, then press "Record clean-filter baseline".

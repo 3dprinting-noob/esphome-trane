@@ -1,9 +1,19 @@
 # Duct static node: Sensirion SDP31 + ESP32 (drawing DS-01)
 
-A separate Wi-Fi device from the Trane CAN recorder, with no CAN connection.
-It measures total external static pressure: P+ goes to the supply plenum
-and P− to the return, on the room side of the filter. It reports to Home
+One board design, built twice. Each board is a separate Wi-Fi device from
+the Trane CAN recorder, with no CAN connection, and reports to Home
 Assistant through ESPHome.
+
+- **Board A (`filter-dp`)** measures the pressure drop across the air filter.
+  P+ goes to the return on the room side of the filter, P− to the blower side.
+- **Board B (`duct-supply`)** measures supply static against the room. P+
+  goes to the supply plenum; P− is a short stub open to the room, pointing
+  down. The room must be at house pressure, not a closet that doubles as the
+  return path.
+
+The minimum JLCPCB order is 5 boards, so 3 are spares. One spare with P+ to
+the room and P− to the blower side of the filter would add return static,
+and supply static plus return static gives total external static pressure.
 
 Full drawing: `schematic.html`, published at
 https://claude.ai/artifact/VHARER1yg1nKfbYYpHPqwD. It holds the schematic
@@ -14,7 +24,9 @@ sheets, netlist, BOM, layout rules, plumbing and bring-up steps.
 | File | What |
 |---|---|
 | `jlcpcb_bom.csv` | JLCPCB BOM upload: Comment, Designator, Footprint, LCSC Part # (13 lines, 20 placements) |
-| `duct-static.yaml` | ESPHome for the Rev B board (ESP32-C3, I²C on GPIO4/5, USB Serial/JTAG) |
+| `filter-dp.yaml` | ESPHome, Board A (filter pressure drop). Entities: `sensor.filter_pressure_drop`, `sensor.filter_pressure_drop_inwc` |
+| `duct-supply.yaml` | ESPHome, Board B (supply static). Entities: `sensor.duct_supply_pressure`, `sensor.duct_supply_pressure_inwc` |
+| `duct_sensors_ha_package.yaml` | Home Assistant package: supply duct resistance, filter resistance, filter loading %, a clean-baseline button and a change reminder |
 | `schematic_svg.py` | Generator for the three schematic sheets on the page |
 
 The parts are:

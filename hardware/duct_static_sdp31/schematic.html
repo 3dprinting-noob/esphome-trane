@@ -82,12 +82,12 @@ a { color: var(--net); }
   <header>
     <div class="eyebrow">Drawing DS-01 · Rev B · 2026-09-30 · JLCPCB assembly</div>
     <h1>SDP31 Duct Static Node</h1>
-    <p class="lede">A single board for JLCPCB to make and assemble. A Sensirion SDP31 differential-pressure sensor and an ESP32-C3 Wi-Fi module report duct static pressure to Home Assistant through ESPHome. USB-C supplies power and programming. It is a separate device from the Trane CAN recorder and never touches the CAN bus.</p>
+    <p class="lede">One board design for JLCPCB, built twice. On each board, a Sensirion SDP31 differential-pressure sensor and an ESP32-C3 Wi-Fi module report to Home Assistant through ESPHome. <b>Board A</b> measures the pressure drop across the air filter. <b>Board B</b> measures supply static against the room. USB-C supplies power and programming. Neither board touches the Trane CAN bus.</p>
     <div class="specs">
       <span class="chip">range <b>±500 Pa</b> = ±2.0 inWC</span>
       <span class="chip">your peak ≈ <b>1.0 inWC</b> at 100 % blower</span>
       <span class="chip">I²C <b>0x21</b> on GPIO4 / GPIO5</span>
-      <span class="chip">BOM <b>13 lines</b> · 20 placements</span>
+      <span class="chip">BOM <b>13 lines</b> · 20 placements per board · order 5</span>
     </div>
   </header>
 
@@ -208,91 +208,94 @@ TS-1187A-B-A-B,"SW1,SW2",SW-SMD 5.1x5.1,C318884</pre>
   </section>
 
   <section>
-    <h2>Plumbing to the ducts</h2>
+    <h2>Plumbing: two boards</h2>
     <figure>
       <div class="plate">
-        <svg viewBox="0 0 960 440" role="img" aria-label="Plumbing: the P+ port connects by tube to a static pressure tip in the supply plenum, the P− port to a tip in the return duct on the room side of the filter; both tubes rise to the sensor box mounted above both taps, so the sensor reads total external static pressure.">
+        <svg viewBox="0 0 960 470" role="img" aria-label="Plumbing with two boards: Board B has P+ tubed to a static tip in the supply plenum and P− as a short stub open to the room, so it reads supply static; Board A has P+ tubed to the return duct on the room side of the filter and P− to the blower side of the filter, so it reads the pressure drop across the filter.">
           <defs>
-            <marker id="flow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="currentColor"/></marker>
-            <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="currentColor" stroke-width="1.2"/></pattern>
+            <marker id="flow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="currentColor"/></marker>
+            <pattern id="hatch2" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="currentColor" stroke-width="1.2"/></pattern>
           </defs>
           <g fill="none" stroke="currentColor" stroke-width="1.6">
-            <!-- supply plenum -->
             <rect x="380" y="60" width="180" height="110"/>
-            <!-- air handler -->
             <path d="M380 320 V170 H560 V320"/>
-            <!-- return plenum + return duct -->
-            <path d="M380 320 V400 H920 M560 320 V340 H920"/>
-                        <!-- sensor box -->
-            <rect x="720" y="30" width="180" height="70" rx="2"/>
+            <path d="M380 320 V420 H920 M560 320 V360 H920"/>
+            <rect x="720" y="20" width="180" height="70" rx="2"/>
+            <rect x="600" y="210" width="200" height="70" rx="2"/>
           </g>
-          <!-- coil + filter hatch -->
-          <rect x="381" y="171" width="178" height="34" fill="url(#hatch)" opacity=".45"/>
-          <rect x="618" y="341" width="14" height="58" fill="url(#hatch)" opacity=".6"/>
-          <!-- airflow arrows -->
+          <rect x="381" y="171" width="178" height="34" fill="url(#hatch2)" opacity=".45"/>
+          <rect x="648" y="361" width="14" height="58" fill="url(#hatch2)" opacity=".6"/>
           <g stroke="currentColor" stroke-width="1.6" fill="none">
-            <path d="M470 56 V16" marker-end="url(#flow)"/>
-            <path d="M900 370 H790" marker-end="url(#flow)"/>
-            <path d="M600 370 H470 V300" marker-end="url(#flow)"/>
+            <path d="M470 56 V16" marker-end="url(#flow2)"/>
+            <path d="M910 390 H840" marker-end="url(#flow2)"/>
+            <path d="M630 390 H470 V300" marker-end="url(#flow2)"/>
           </g>
-          <!-- tubes -->
           <g fill="none" class="as" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M560 150 L770 124 V100"/>
-            <path d="M720 340 L850 262 V100"/>
+            <path d="M560 150 L770 116 V90"/>
+            <path d="M850 90 V118"/>
+            <path d="M740 360 L740 280"/>
+            <path d="M600 360 L640 330 V280"/>
           </g>
           <g class="af" stroke="none">
             <circle cx="560" cy="150" r="5"/>
-            <circle cx="720" cy="340" r="5"/>
+            <circle cx="740" cy="360" r="5"/>
+            <circle cx="600" cy="360" r="5"/>
           </g>
+          <circle cx="850" cy="122" r="4" fill="none" class="as" stroke-width="2"/>
           <g fill="currentColor" font-size="12.5">
             <text x="470" y="112" text-anchor="middle" font-weight="600">Supply plenum</text>
             <text x="470" y="198" text-anchor="middle" class="mu">coil</text>
             <text x="470" y="250" text-anchor="middle" font-weight="600">Air handler</text>
             <text x="470" y="268" text-anchor="middle" class="mu">blower</text>
             <text x="478" y="14" class="mu">to house</text>
-            <text x="910" y="360" text-anchor="end" class="mu">return air from house</text>
-            <text x="625" y="418" text-anchor="middle" class="mu">filter</text>
-            <text x="810" y="58" text-anchor="middle" font-weight="600">SDP31 + ESP32</text>
-            <text x="810" y="76" text-anchor="middle" class="mu">above both taps</text>
-            <text x="770" y="118" text-anchor="end" class="af" font-weight="600">P+</text>
-            <text x="858" y="118" class="af" font-weight="600">P−</text>
+            <text x="912" y="380" text-anchor="end" class="mu">return air from house</text>
+            <text x="655" y="440" text-anchor="middle" class="mu">filter</text>
+            <text x="810" y="48" text-anchor="middle" font-weight="600">Board B · supply</text>
+            <text x="810" y="66" text-anchor="middle" class="mu">duct-supply</text>
+            <text x="700" y="240" text-anchor="middle" font-weight="600">Board A · filter</text>
+            <text x="700" y="258" text-anchor="middle" class="mu">filter-dp</text>
+            <text x="764" y="108" text-anchor="end" class="af" font-weight="600">P+</text>
+            <text x="862" y="108" class="af" font-weight="600">P−</text>
+            <text x="862" y="136" class="mu">open to room,</text>
+            <text x="862" y="152" class="mu">pointing down</text>
             <text x="572" y="172" class="af">+ tip, supply plenum</text>
-            <text x="708" y="324" text-anchor="end" class="af">− tip, room side of filter</text>
-            <text x="862" y="230" class="mu">tubes rise</text>
-            <text x="862" y="246" class="mu">to sensor</text>
+            <text x="752" y="300" class="af" font-weight="600">P+</text>
+            <text x="628" y="300" text-anchor="end" class="af" font-weight="600">P−</text>
+            <text x="752" y="352" class="af">+ room side</text>
+            <text x="588" y="352" text-anchor="end" class="af">− blower side</text>
           </g>
         </svg>
       </div>
-      <figcaption><b>P+ to the supply plenum and P− to the return reads total external static pressure</b> (TESP), the figure a blower's fan table is rated against. The return tip sits on the room side of the filter, because the filter's pressure drop counts as external static. Both tubes climb to the sensor, so condensation from a cold supply plenum runs back into the duct instead of into the sensor.</figcaption>
+      <figcaption><b>Board B reads supply static against the room; Board A reads the drop across the filter.</b> On Board A, P+ is on the room side of the filter, so a loading filter gives a rising positive number. Both supply tubes climb to Board B, so condensation from the cold supply plenum drains back into the duct. Board B's P− is a short stub open to the room, pointing down.</figcaption>
     </figure>
 
     <div class="two">
       <ul class="rules">
-        <li>Use static pressure tips, the same kind a technician uses for a TESP reading. Put each through a hole sized for the tip (typically 3/8″) and seal it with a grommet. The tip faces into the airflow.</li>
-        <li><b>Supply tap:</b> in the plenum sheet metal above the coil box, before the first branch. Look behind the panel before drilling; <b>never drill near the coil or refrigerant lines</b>.</li>
-        <li><b>Return tap:</b> in the return duct, on the room side of the filter rack.</li>
+        <li><b>The room reference must be at true house pressure.</b> A normal utility room or basement is fine. A closet that doubles as the return path (a grille on the door or an open-bottom return) is not; in that case run Board B's P− tube out to the hallway.</li>
+        <li>Tube length only matters in total, because the SDP31 passes a tiny airflow through both tubes in series. Keep it short. Matching the two sides and matching heights make no measurable difference: the stack effect is well under 1 Pa per metre.</li>
       </ul>
       <ul class="rules">
-        <li>Keep both tubes short and about the same length. The SDP measures a tiny flow through itself, so long, thin tubing reads low. Sensirion's datasheet has a correction for long tubes.</li>
-        <li>Mount the sensor and ESP32 outside the ducts, above both taps, with the tubes sloping down to the taps.</li>
-        <li>The Trane ESP32 in this same space dropped to about −85 dBm. If this one does too, use an ESP32-DevKitC-32UE with an external antenna; the board setting is the same.</li>
+        <li>Use static pressure tips, sealed with grommets and facing into the airflow. Board A's taps go close to either side of the filter rack, with no fitting or elbow between tap and filter.</li>
+        <li><b>Supply tap:</b> in the plenum sheet metal above the coil box. Look behind the panel first; <b>never drill near the coil or refrigerant lines</b>.</li>
+        <li><b>A use for a spare board:</b> P+ to the room and P− to the blower side of the filter gives return static. Supply static plus return static is the total external static pressure the blower is rated against.</li>
       </ul>
     </div>
   </section>
 
 
   <section>
-    <h2>ESPHome firmware</h2>
-    <p>Add it in Device Builder: <b>+ New device → Continue → skip</b>, name it <code>duct-static</code>, then replace its YAML with this. It uses the same <code>wifi_ssid</code>, <code>wifi_password</code> and <code>ota_password</code> secrets as esphome-trane. Add one line to Secrets: <code>duct_static_api_key: "…"</code>, using the key Device Builder generates for the device. The config passes <code>esphome config</code> on ESPHome 2026.6.5.</p>
-    <div class="code">
-      <div class="bar"><span>duct-static.yaml (Rev B board)</span><button class="copy" id="copy-yaml" data-target="yaml">Copy</button></div>
-      <pre id="yaml"># Duct static node, custom PCB rev B (JLCPCB): ESP32-C3-MINI-1-N4 + Sensirion SDP31.
-# I2C: GPIO4 = SDA, GPIO5 = SCL (4.7k pull-ups on the board). USB-C = native
-# USB Serial/JTAG (logs and first flash). Separate device from esphome-trane (no CAN).
-# + port = supply plenum, - port = return (room side of filter) -&gt; TESP.
+    <h2>ESPHome firmware, one device per board</h2>
+    <p>The two files are identical except for the device name, the entity names and the API key. In Device Builder, choose <b>+ New device → Continue → skip</b> once for each: name one <code>filter-dp</code> and the other <code>duct-supply</code>, then paste the matching file. Both use your existing <code>wifi_ssid</code>, <code>wifi_password</code> and <code>ota_password</code> secrets. Add <code>filter_dp_api_key</code> and <code>duct_supply_api_key</code> to Secrets, using the keys Device Builder generates. Both files pass <code>esphome config</code> on ESPHome 2026.6.5.</p>
+    <div class="two">
+      <div class="code">
+        <div class="bar"><span>filter-dp.yaml · Board A</span><button class="copy" id="copy-a" data-target="yaml-a">Copy</button></div>
+        <pre id="yaml-a"># Board A: pressure drop across the air filter. Rev B JLCPCB board (ESP32-C3-MINI-1 + SDP31).
+# P+ = return duct, room side of the filter; P- = return duct, blower side of the filter.
+# A positive reading = drop across the filter; it rises as the filter loads.
+# I2C: GPIO4 = SDA, GPIO5 = SCL. USB-C = native USB Serial/JTAG. No CAN connection.
 esphome:
-  name: duct-static
-  friendly_name: Duct Static
+  name: filter-dp
+  friendly_name: Filter
 
 esp32:
   board: esp32-c3-devkitm-1
@@ -304,7 +307,7 @@ logger:
 
 api:
   encryption:
-    key: !secret duct_static_api_key
+    key: !secret filter_dp_api_key
 
 ota:
   - platform: esphome
@@ -314,7 +317,76 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   ap:
-    ssid: "Duct Static Setup"
+    ssid: "Filter Setup"
+
+captive_portal:
+
+i2c:
+  sda: GPIO4
+  scl: GPIO5
+  frequency: 100kHz
+  scan: true
+
+sensor:
+  # ESPHome reports SDP3x/SDP8xx in hPa and auto-detects the model.
+  # SDP31: 0x21 (ADDR to GND on the board).
+  - platform: sdp3x
+    id: duct_static_pa
+    name: "Pressure Drop"
+    address: 0x21
+    update_interval: 2s
+    unit_of_measurement: Pa
+    accuracy_decimals: 1
+    filters:
+      - multiply: 100.0          # hPa -&gt; Pa
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 5          # one value every 10 s
+
+  - platform: copy
+    source_id: duct_static_pa
+    name: "Pressure Drop inWC"
+    unit_of_measurement: inWC
+    device_class: ""
+    accuracy_decimals: 3
+    icon: mdi:gauge
+    filters:
+      - multiply: 0.00401463     # 1 Pa = 0.00401463 inWC
+
+  - platform: wifi_signal
+    name: "Wi-Fi Signal"
+    update_interval: 60s</pre>
+      </div>
+      <div class="code">
+        <div class="bar"><span>duct-supply.yaml · Board B</span><button class="copy" id="copy-b" data-target="yaml-b">Copy</button></div>
+        <pre id="yaml-b"># Board B: supply static. Rev B JLCPCB board (ESP32-C3-MINI-1 + SDP31).
+# P+ = supply plenum tip; P- = short stub open to the room (house pressure), pointing down.
+# I2C: GPIO4 = SDA, GPIO5 = SCL. USB-C = native USB Serial/JTAG. No CAN connection.
+esphome:
+  name: duct-supply
+  friendly_name: Duct Supply
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+logger:
+  hardware_uart: USB_SERIAL_JTAG
+
+api:
+  encryption:
+    key: !secret duct_supply_api_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Duct Supply Setup"
 
 captive_portal:
 
@@ -353,41 +425,120 @@ sensor:
   - platform: wifi_signal
     name: "Wi-Fi Signal"
     update_interval: 60s</pre>
+      </div>
     </div>
+    <p>Home Assistant gets <code>sensor.filter_pressure_drop</code> and <code>sensor.filter_pressure_drop_inwc</code> from Board A, and <code>sensor.duct_supply_pressure</code> and <code>sensor.duct_supply_pressure_inwc</code> from Board B. Each publishes one value every 10 s, the average of five 2 s reads.</p>
     <ol class="steps">
       <li><b>First flash over USB-C:</b> plug the board into the computer running the browser and choose Install → Plug into this computer.</li>
       <li>If the port doesn't appear, hold <b>BOOT</b>, tap <b>RESET</b>, release <b>BOOT</b>, and try again.</li>
       <li>After that, updates go over Wi-Fi (Install → Wirelessly), and the board only needs a USB-C charger.</li>
+      <li>Label each board A or B before it goes on the duct. The boards are identical, so only the firmware tells them apart.</li>
     </ol>
   </section>
 
   <section>
-    <h2>Duct resistance in Home Assistant</h2>
-    <p>This is the fan-law number from the Trane review: static divided by (rpm/1000)². It uses this sensor's static and the Trane blower motor speed, so it gives an independent check on the 0.27–0.28 baseline and on the Trane's own duct static reading. Put it in a template package:</p>
+    <h2>Home Assistant: resistances and a dirty-filter alert</h2>
+    <p>Both pressures depend on blower speed; pressure goes with the square of airflow. Dividing by (rpm/1000)², using the Trane blower motor speed, gives a <b>resistance</b> that stays comparable at any speed. Filter resistance compared with its clean value gives <b>Filter Loading</b> in %. A change reminder fires once it has stayed above 200 % for 6 hours. Double the clean drop is a common change point; adjust it to your filter maker's rated final resistance if you have it.</p>
     <div class="code">
-      <div class="bar"><span>packages/duct_resistance.yaml</span><button class="copy" id="copy-ha" data-target="ha">Copy</button></div>
-      <pre id="ha">template:
+      <div class="bar"><span>packages/duct_sensors_ha_package.yaml</span><button class="copy" id="copy-ha" data-target="ha">Copy</button></div>
+      <pre id="ha"># Home Assistant package for the two duct boards (drawing DS-01 rev B).
+# Put in /config/packages/ (packages: !include_dir_named packages), restart.
+# Resistances divide by (blower rpm / 1000)^2, so they stay comparable at any
+# blower speed (fan law: pressure goes with the square of airflow).
+input_number:
+  filter_clean_resistance:
+    name: Filter resistance when clean
+    min: 0
+    max: 1
+    step: 0.001
+    mode: box
+    unit_of_measurement: "inWC/krpm²"
+    icon: mdi:air-filter
+
+input_button:
+  filter_record_clean_baseline:
+    name: Record clean-filter baseline
+    icon: mdi:air-filter
+
+template:
   - sensor:
-      - name: "Duct Resistance (SDP31)"
-        unique_id: duct_resistance_sdp31
+      - name: "Supply Duct Resistance"
+        unique_id: supply_duct_resistance
         unit_of_measurement: "inWC/krpm²"
         state_class: measurement
-        availability: >
-          {{ states('sensor.duct_static_pressure_inwc') | float(none) is number
-             and states('sensor.trane_air_handler_blower_motor_speed') | float(0) > 300 }}
-        state: >
-          {% set s = states('sensor.duct_static_pressure_inwc') | float %}
+        availability: &gt;
+          {{ states('sensor.duct_supply_pressure_inwc') | float(none) is number
+             and states('sensor.trane_air_handler_blower_motor_speed') | float(0) &gt; 600 }}
+        state: &gt;
+          {% set s = states('sensor.duct_supply_pressure_inwc') | float %}
           {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float %}
-          {{ (s / (r / 1000) ** 2) | round(3) }}</pre>
-    </div>
-  </section>
+          {{ (s / (r / 1000) ** 2) | round(3) }}
+      - name: "Filter Resistance"
+        unique_id: filter_resistance
+        unit_of_measurement: "inWC/krpm²"
+        state_class: measurement
+        availability: &gt;
+          {{ states('sensor.filter_pressure_drop_inwc') | float(none) is number
+             and states('sensor.trane_air_handler_blower_motor_speed') | float(0) &gt; 600 }}
+        state: &gt;
+          {% set d = states('sensor.filter_pressure_drop_inwc') | float %}
+          {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float %}
+          {{ (d / (r / 1000) ** 2) | round(4) }}
+      - name: "Filter Loading"
+        unique_id: filter_loading
+        unit_of_measurement: "%"
+        state_class: measurement
+        icon: mdi:air-filter
+        availability: &gt;
+          {{ states('sensor.filter_resistance') | float(none) is number
+             and states('input_number.filter_clean_resistance') | float(0) &gt; 0 }}
+        state: &gt;
+          {{ (states('sensor.filter_resistance') | float
+              / states('input_number.filter_clean_resistance') | float * 100) | round(0) }}
 
+automation:
+  - id: filter_record_clean_baseline
+    alias: Filter - record clean baseline
+    description: Press after fitting a new filter, with the blower running steadily.
+    triggers:
+      - trigger: state
+        entity_id: input_button.filter_record_clean_baseline
+    conditions:
+      - condition: template
+        value_template: "{{ states('sensor.filter_resistance') | float(none) is number }}"
+    actions:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.filter_clean_resistance
+        data:
+          value: "{{ states('sensor.filter_resistance') | float }}"
+  - id: filter_change_reminder
+    alias: Filter - change reminder
+    description: Notifies when the filter's resistance has stayed above double its clean value for 6 hours.
+    triggers:
+      - trigger: numeric_state
+        entity_id: sensor.filter_loading
+        above: 200
+        for: "06:00:00"
+    actions:
+      - action: persistent_notification.create
+        data:
+          title: Air filter
+          message: &gt;
+            Filter resistance is {{ states('sensor.filter_loading') }} % of its clean value.
+            Time to change it, then press "Record clean-filter baseline".</pre>
+    </div>
+    <ol class="steps">
+      <li>After fitting a new filter, run the blower steadily (fan-On) for a few minutes, then press <b>Record clean-filter baseline</b>.</li>
+      <li><code>sensor.supply_duct_resistance</code> is the independent check on the 0.27–0.28 duct-resistance baseline from the Trane review. Being supply-only, it will read lower than a total-static figure.</li>
+    </ol>
+  </section>
 
   <section>
     <h2>First power-up checks</h2>
     <ol class="steps">
       <li>Before connecting the tubes, the reading should sit within about ±1 Pa of zero. That proves the sensor, the address and the zero point.</li>
-      <li>On fan-On (maximum blower), expect about 1.0 inWC (~249 Pa) if your system matches the Trane reading. A <b>negative</b> value means P+ and P− are swapped.</li>
+      <li>On fan-On (maximum blower), Board B should read well above zero, a large share of the Trane's ~1.0 inWC, and Board A a small positive number. A <b>negative</b> value on either board means its P+ and P− tubes are swapped.</li>
       <li>The boot log's I²C scan should list <b>0x21</b>. If it's missing, check the SDP31 solder joints and R1/R2.</li>
     </ol>
   </section>

@@ -1,10 +1,10 @@
-# Duct static node, custom PCB rev B (JLCPCB): ESP32-C3-MINI-1-N4 + Sensirion SDP31.
-# I2C: GPIO4 = SDA, GPIO5 = SCL (4.7k pull-ups on the board). USB-C = native
-# USB Serial/JTAG (logs and first flash). Separate device from esphome-trane (no CAN).
-# + port = supply plenum, - port = return (room side of filter) -> TESP.
+# Board A: pressure drop across the air filter. Rev B JLCPCB board (ESP32-C3-MINI-1 + SDP31).
+# P+ = return duct, room side of the filter; P- = return duct, blower side of the filter.
+# A positive reading = drop across the filter; it rises as the filter loads.
+# I2C: GPIO4 = SDA, GPIO5 = SCL. USB-C = native USB Serial/JTAG. No CAN connection.
 esphome:
-  name: duct-static
-  friendly_name: Duct Static
+  name: filter-dp
+  friendly_name: Filter
 
 esp32:
   board: esp32-c3-devkitm-1
@@ -16,7 +16,7 @@ logger:
 
 api:
   encryption:
-    key: !secret duct_static_api_key
+    key: !secret filter_dp_api_key
 
 ota:
   - platform: esphome
@@ -26,7 +26,7 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   ap:
-    ssid: "Duct Static Setup"
+    ssid: "Filter Setup"
 
 captive_portal:
 
@@ -41,7 +41,7 @@ sensor:
   # SDP31: 0x21 (ADDR to GND on the board).
   - platform: sdp3x
     id: duct_static_pa
-    name: "Pressure"
+    name: "Pressure Drop"
     address: 0x21
     update_interval: 2s
     unit_of_measurement: Pa
@@ -54,7 +54,7 @@ sensor:
 
   - platform: copy
     source_id: duct_static_pa
-    name: "Pressure inWC"
+    name: "Pressure Drop inWC"
     unit_of_measurement: inWC
     device_class: ""
     accuracy_decimals: 3
