@@ -1,0 +1,427 @@
+<title>SDP31 Duct Static Node</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one drawing sheet, 880px column; figures are the plates, a title block closes the sheet. */
+:root {
+  --paper: #f6f7f5;
+  --sheet: #ffffff;
+  --ink: #1d2a33;
+  --ink-2: #51606b;
+  --rule: #cfd6d9;
+  --air: #b8621b;        /* pneumatic: ports, tubes, pressure */
+  --air-soft: #f3e3d4;
+  --net: #2d6a8f;        /* net labels */
+  --warn-bg: #fbf1e6;
+  --font-display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12181c; --sheet: #182127; --ink: #dbe4e8; --ink-2: #9aabb4; --rule: #2e3c44;
+    --air: #e79a57; --air-soft: #3a2a1d; --net: #7fb6d8; --warn-bg: #2b2219; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12181c; --sheet: #182127; --ink: #dbe4e8; --ink-2: #9aabb4; --rule: #2e3c44;
+  --air: #e79a57; --air-soft: #3a2a1d; --net: #7fb6d8; --warn-bg: #2b2219; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+.sheet { max-width: 920px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 40px; display: grid; gap: 28px; }
+header { display: grid; gap: 8px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(34px, 6vw, 48px); line-height: 1; margin: 0; letter-spacing: .01em; text-wrap: balance; }
+h2 { font-family: var(--font-display); font-weight: 600; font-size: 26px; margin: 0; letter-spacing: .02em; text-wrap: balance; }
+h3 { font-size: 15px; margin: 0; }
+p { margin: 0; max-width: 68ch; }
+.lede { color: var(--ink-2); font-size: 16px; }
+.specs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.chip { font-family: var(--font-mono); font-size: 12.5px; border: 1px solid var(--rule); border-radius: 3px; padding: 3px 8px; background: var(--sheet); font-variant-numeric: tabular-nums; }
+.chip b { color: var(--air); font-weight: 500; }
+section { display: grid; gap: 12px; min-width: 0; }
+.note { background: var(--warn-bg); border-left: 3px solid var(--air); padding: 12px 14px; display: grid; gap: 6px; }
+figure { margin: 0; background: var(--sheet); border: 1px solid var(--rule); display: grid; }
+.plate { overflow-x: auto; padding: 14px 10px 6px; }
+.plate svg { display: block; width: 100%; min-width: 640px; height: auto; color: var(--ink); font-family: var(--font-mono); }
+figcaption { border-top: 1px solid var(--rule); padding: 10px 14px; font-size: 13.5px; color: var(--ink-2); }
+figcaption b { color: var(--ink); font-weight: 600; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); background: var(--sheet); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); font-weight: 500; }
+tr:last-child td { border-bottom: 0; }
+td.mono, .mono { font-family: var(--font-mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.net { color: var(--net); font-family: var(--font-mono); font-weight: 500; }
+ul.rules { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 72ch; }
+ol.steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; max-width: 72ch; }
+code { font-family: var(--font-mono); font-size: 13px; background: var(--air-soft); padding: 1px 4px; border-radius: 2px; }
+.code { position: relative; background: var(--sheet); border: 1px solid var(--rule); min-width: 0; }
+.code pre { margin: 0; padding: 14px 14px 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5; }
+.code .bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 8px 6px 14px; border-bottom: 1px solid var(--rule); font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); }
+button.copy { font: 500 12px var(--font-mono); color: var(--ink); background: transparent; border: 1px solid var(--rule); border-radius: 3px; padding: 4px 10px; cursor: pointer; }
+button.copy:hover { border-color: var(--ink-2); }
+button.copy:focus-visible { outline: 2px solid var(--net); outline-offset: 2px; }
+.titleblock { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); border: 1.5px solid var(--ink); background: var(--sheet); }
+.titleblock div { padding: 8px 12px; border-right: 1px solid var(--rule); border-top: 1px solid var(--rule); display: grid; gap: 2px; }
+.titleblock span { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.titleblock strong { font-family: var(--font-display); font-weight: 600; font-size: 18px; letter-spacing: .02em; }
+a { color: var(--net); }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.two > * { min-width: 0; }
+.plate .mu { fill: var(--ink-2); }
+.plate .af { fill: var(--air); }
+.plate .nf { fill: var(--net); }
+.plate .as { stroke: var(--air); }
+</style>
+
+<main class="sheet">
+  <header>
+    <div class="eyebrow">Drawing DS-01 · Rev A · 2026-09-30 · household HVAC</div>
+    <h1>SDP31 Duct Static Node</h1>
+    <p class="lede">A Sensirion SDP31 differential-pressure sensor on an ESP32 over I²C, reporting duct static pressure to Home Assistant over Wi-Fi through ESPHome. It is a separate device from the Trane CAN recorder and never touches the CAN bus.</p>
+    <div class="specs">
+      <span class="chip">range <b>±500 Pa</b> = ±2.0 inWC</span>
+      <span class="chip">your peak ≈ <b>1.0 inWC</b> (249 Pa) at 100 % blower</span>
+      <span class="chip">I²C <b>0x21</b></span>
+      <span class="chip">VDD 2.7–5.5 V · run it at <b>3.3 V</b></span>
+    </div>
+  </header>
+
+  <div class="note">
+    <h3>About the part name</h3>
+    <p>Sensirion doesn't make an "STB 31", so this drawing uses the <b>SDP31</b> (±500 Pa). Don't substitute the SDP32: it tops out at ±125 Pa (0.5 inWC), about half the static your blower makes on fan-On. The <b>SDP810-500Pa</b> is a drop-in alternative with barbed tube ports. The wiring is identical; change <code>address: 0x21</code> to <code>0x25</code>.</p>
+  </div>
+
+  <section>
+    <h2>Schematic</h2>
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 980 520" role="img" aria-label="Schematic: ESP32-DevKitC GPIO21 and GPIO22 drive the SDP31's SDA and SCL with 4.7 kilohm pull-ups to 3.3 volts; the SDP31 is powered from the ESP32's 3.3 volt pin with a 100 nanofarad decoupling capacitor, ADDR tied to ground for address 0x21, IRQn left unconnected.">
+          <defs>
+            <marker id="nc" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="10" markerHeight="10"><path d="M1 1 L9 9 M9 1 L1 9" stroke="currentColor" stroke-width="1.6" fill="none"/></marker>
+          </defs>
+          <g fill="none" stroke="currentColor" stroke-width="1.6">
+            <!-- U1 ESP32 -->
+            <rect x="90" y="80" width="210" height="340" rx="2"/>
+            <!-- U2 SDP31 -->
+            <rect x="640" y="120" width="240" height="300" rx="2"/>
+            <!-- rails -->
+            <path d="M300 140 H340 V60 H940 V240"/>
+            <path d="M940 252 V470 H340 V380 H300"/>
+            <!-- C1 plates -->
+            <path d="M922 240 H958 M922 252 H958" stroke-width="2.4"/>
+            <!-- SDA with hop over R2 -->
+            <path d="M300 220 H532 A8 8 0 0 1 548 220 H640"/>
+            <!-- SCL -->
+            <path d="M300 280 H640"/>
+            <!-- R1 SDA pull-up -->
+            <path d="M460 60 V110 L452 115 L468 125 L452 135 L468 145 L452 155 L468 165 L460 170 V220"/>
+            <!-- R2 SCL pull-up -->
+            <path d="M540 60 V150 L532 155 L548 165 L532 175 L548 185 L532 195 L548 205 L540 210 V280"/>
+            <!-- VDD pin -->
+            <path d="M700 60 V120"/>
+            <!-- GND pins -->
+            <path d="M720 420 V470"/>
+            <!-- ADDR to GND -->
+            <path d="M640 350 H610 V470"/>
+            <!-- IRQn NC -->
+            <path d="M880 350 H904" marker-end="url(#nc)"/>
+            <!-- ground symbol -->
+            <path d="M340 470 V488 M326 488 H354 M331 494 H349 M336 500 H344"/>
+          </g>
+          <!-- pneumatic ports -->
+          <g fill="none" class="as" stroke-width="3" stroke-linecap="round">
+            <path d="M790 120 V96"/>
+            <path d="M850 120 V96"/>
+          </g>
+          <g fill="currentColor" stroke="none">
+            <circle cx="460" cy="60" r="3.6"/><circle cx="540" cy="60" r="3.6"/><circle cx="700" cy="60" r="3.6"/>
+            <circle cx="460" cy="220" r="3.6"/><circle cx="540" cy="280" r="3.6"/>
+            <circle cx="610" cy="470" r="3.6"/><circle cx="720" cy="470" r="3.6"/>
+          </g>
+          <g fill="currentColor" font-size="12.5">
+            <!-- U1 labels -->
+            <text x="195" y="104" text-anchor="middle" font-size="14" font-weight="600">U1 · ESP32-DevKitC</text>
+            <text x="195" y="122" text-anchor="middle" class="mu">WROOM-32E, Wi-Fi</text>
+            <text x="290" y="144" text-anchor="end">3V3</text>
+            <text x="290" y="224" text-anchor="end">GPIO21 · SDA</text>
+            <text x="290" y="284" text-anchor="end">GPIO22 · SCL</text>
+            <text x="290" y="384" text-anchor="end">GND</text>
+            <text x="102" y="384" class="mu">USB 5 V in</text>
+            <text x="102" y="402" class="mu">(phone charger)</text>
+            <!-- U2 labels -->
+            <text x="760" y="258" text-anchor="middle" font-size="14" font-weight="600">U2 · SDP31</text>
+            <text x="760" y="276" text-anchor="middle" class="mu">±500 Pa · I²C</text>
+            <text x="712" y="140">VDD · 7</text>
+            <text x="652" y="224">SDA · 8</text>
+            <text x="652" y="284">SCL · 5</text>
+            <text x="652" y="354">ADDR · 9</text>
+            <text x="868" y="354" text-anchor="end">IRQn · 4</text>
+            <text x="760" y="410" text-anchor="middle">GND · 1 2 3 6 10 11</text>
+            <text x="868" y="394" text-anchor="end" class="mu">12–16 NC</text>
+            <text x="790" y="88" text-anchor="middle" class="af" font-weight="600">P+</text>
+            <text x="850" y="88" text-anchor="middle" class="af" font-weight="600">P−</text>
+            <text x="918" y="360" class="mu">NC</text>
+            <!-- passives -->
+            <text x="476" y="138">R1</text><text x="476" y="154" class="mu">4.7 kΩ</text>
+            <text x="556" y="178">R2</text><text x="556" y="194" class="mu">4.7 kΩ</text>
+            <text x="916" y="236" text-anchor="end">C1</text><text x="916" y="268" text-anchor="end" class="mu">100 nF</text>
+            <!-- nets -->
+            <text x="352" y="52" class="nf" font-weight="500">+3V3</text>
+            <text x="372" y="462" class="nf" font-weight="500">GND</text>
+            <text x="372" y="212" class="nf" font-weight="500">SDA</text>
+            <text x="372" y="272" class="nf" font-weight="500">SCL</text>
+            <text x="604" y="400" text-anchor="end" class="mu">ADDR→GND</text>
+            <text x="604" y="416" text-anchor="end" class="mu">= 0x21</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption><b>Everything runs at 3.3 V.</b> The SDP31 takes its supply from the ESP32's 3V3 pin, so the I²C pull-ups also go to 3.3 V; ESP32 pins are not 5 V tolerant. R1, R2 and C1 are usually already on a breakout board, so fit them only if yours doesn't have them. The hop on SDA means R2's lead crosses it without connecting.</figcaption>
+    </figure>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Net</th><th>ESP32-DevKitC</th><th>SDP31 pin</th><th>Breakout label</th><th>Wire (Qwiic colour)</th></tr></thead>
+        <tbody>
+          <tr><td class="net">+3V3</td><td class="mono">3V3</td><td class="mono">7 · VDD</td><td class="mono">3V3 / VCC</td><td>red</td></tr>
+          <tr><td class="net">GND</td><td class="mono">GND</td><td class="mono">1 2 3 6 10 11 · GND</td><td class="mono">GND</td><td>black</td></tr>
+          <tr><td class="net">SDA</td><td class="mono">GPIO21</td><td class="mono">8 · SDA</td><td class="mono">SDA</td><td>blue</td></tr>
+          <tr><td class="net">SCL</td><td class="mono">GPIO22</td><td class="mono">5 · SCL</td><td class="mono">SCL</td><td>yellow</td></tr>
+          <tr><td class="net">ADDR</td><td>—</td><td class="mono">9 · ADDR → GND</td><td class="mono">ADR jumper (default)</td><td>—</td></tr>
+          <tr><td class="net">IRQn</td><td>—</td><td class="mono">4 · not connected</td><td class="mono">INT / IRQ</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ul class="rules">
+      <li><b>Never tie ADDR to VDD.</b> Tied to GND it gives address 0x21. 1.2 kΩ to GND gives 0x22, and 2.7 kΩ to GND gives 0x23 (±5 % resistors).</li>
+      <li>Keep the I²C run between the boards short (under about 30 cm). The sensor goes near the ducts, and only the USB cable runs to the outlet.</li>
+      <li>The bare SDP31 is a small reflow-soldered part. Buy it on a breakout board, such as the SparkFun SparkX SDP31 Qwiic board, rather than hand-soldering the chip.</li>
+      <li>The pin numbers come from Sensirion's SDP3x-Digital datasheet. Check them against the current datasheet before laying out your own PCB. A breakout board prints its pin names, so the numbers only matter for a custom board.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Plumbing to the ducts</h2>
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 960 440" role="img" aria-label="Plumbing: the P+ port connects by tube to a static pressure tip in the supply plenum, the P− port to a tip in the return duct on the room side of the filter; both tubes rise to the sensor box mounted above both taps, so the sensor reads total external static pressure.">
+          <defs>
+            <marker id="flow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="currentColor"/></marker>
+            <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="currentColor" stroke-width="1.2"/></pattern>
+          </defs>
+          <g fill="none" stroke="currentColor" stroke-width="1.6">
+            <!-- supply plenum -->
+            <rect x="380" y="60" width="180" height="110"/>
+            <!-- air handler -->
+            <path d="M380 320 V170 H560 V320"/>
+            <!-- return plenum + return duct -->
+            <path d="M380 320 V400 H920 M560 320 V340 H920"/>
+                        <!-- sensor box -->
+            <rect x="720" y="30" width="180" height="70" rx="2"/>
+          </g>
+          <!-- coil + filter hatch -->
+          <rect x="381" y="171" width="178" height="34" fill="url(#hatch)" opacity=".45"/>
+          <rect x="618" y="341" width="14" height="58" fill="url(#hatch)" opacity=".6"/>
+          <!-- airflow arrows -->
+          <g stroke="currentColor" stroke-width="1.6" fill="none">
+            <path d="M470 56 V16" marker-end="url(#flow)"/>
+            <path d="M900 370 H790" marker-end="url(#flow)"/>
+            <path d="M600 370 H470 V300" marker-end="url(#flow)"/>
+          </g>
+          <!-- tubes -->
+          <g fill="none" class="as" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M560 150 L770 124 V100"/>
+            <path d="M720 340 L850 262 V100"/>
+          </g>
+          <g class="af" stroke="none">
+            <circle cx="560" cy="150" r="5"/>
+            <circle cx="720" cy="340" r="5"/>
+          </g>
+          <g fill="currentColor" font-size="12.5">
+            <text x="470" y="112" text-anchor="middle" font-weight="600">Supply plenum</text>
+            <text x="470" y="198" text-anchor="middle" class="mu">coil</text>
+            <text x="470" y="250" text-anchor="middle" font-weight="600">Air handler</text>
+            <text x="470" y="268" text-anchor="middle" class="mu">blower</text>
+            <text x="478" y="14" class="mu">to house</text>
+            <text x="910" y="360" text-anchor="end" class="mu">return air from house</text>
+            <text x="625" y="418" text-anchor="middle" class="mu">filter</text>
+            <text x="810" y="58" text-anchor="middle" font-weight="600">SDP31 + ESP32</text>
+            <text x="810" y="76" text-anchor="middle" class="mu">above both taps</text>
+            <text x="770" y="118" text-anchor="end" class="af" font-weight="600">P+</text>
+            <text x="858" y="118" class="af" font-weight="600">P−</text>
+            <text x="572" y="172" class="af">+ tip, supply plenum</text>
+            <text x="708" y="324" text-anchor="end" class="af">− tip, room side of filter</text>
+            <text x="862" y="230" class="mu">tubes rise</text>
+            <text x="862" y="246" class="mu">to sensor</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption><b>P+ to the supply plenum and P− to the return reads total external static pressure</b> (TESP), the figure a blower's fan table is rated against. The return tip sits on the room side of the filter, because the filter's pressure drop counts as external static. Both tubes climb to the sensor, so condensation from a cold supply plenum runs back into the duct instead of into the sensor.</figcaption>
+    </figure>
+
+    <div class="two">
+      <ul class="rules">
+        <li>Use static pressure tips, the same kind a technician uses for a TESP reading. Put each through a hole sized for the tip (typically 3/8″) and seal it with a grommet. The tip faces into the airflow.</li>
+        <li><b>Supply tap:</b> in the plenum sheet metal above the coil box, before the first branch. Look behind the panel before drilling; <b>never drill near the coil or refrigerant lines</b>.</li>
+        <li><b>Return tap:</b> in the return duct, on the room side of the filter rack.</li>
+      </ul>
+      <ul class="rules">
+        <li>Keep both tubes short and about the same length. The SDP measures a tiny flow through itself, so long, thin tubing reads low. Sensirion's datasheet has a correction for long tubes.</li>
+        <li>Mount the sensor and ESP32 outside the ducts, above both taps, with the tubes sloping down to the taps.</li>
+        <li>The Trane ESP32 in this same space dropped to about −85 dBm. If this one does too, use an ESP32-DevKitC-32UE with an external antenna; the board setting is the same.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Parts</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Ref</th><th>Part</th><th>Qty</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">U1</td><td>ESP32-DevKitC-32E (or -32UE plus 2.4 GHz antenna)</td><td class="mono">1</td><td>Wi-Fi, USB powered</td></tr>
+          <tr><td class="mono">U2</td><td>Sensirion SDP31-500Pa on a breakout (for example SparkFun SparkX SDP31 Qwiic)</td><td class="mono">1</td><td>or SDP810-500Pa, address 0x25</td></tr>
+          <tr><td class="mono">R1, R2</td><td>4.7 kΩ resistor</td><td class="mono">2</td><td>only if the breakout has no pull-ups</td></tr>
+          <tr><td class="mono">C1</td><td>100 nF ceramic capacitor, X7R</td><td class="mono">1</td><td>only if the breakout doesn't have one; place next to VDD</td></tr>
+          <tr><td class="mono">J1</td><td>Qwiic to female-jumper cable, or 4 Dupont wires</td><td class="mono">1</td><td>under 30 cm</td></tr>
+          <tr><td class="mono">P1, P2</td><td>Static pressure tips, grommets, silicone tubing sized to the sensor ports</td><td class="mono">2</td><td>equal short lengths</td></tr>
+          <tr><td class="mono">PS1</td><td>5 V USB adapter, 1 A, and cable</td><td class="mono">1</td><td>ESP32 peaks around 250 mA</td></tr>
+          <tr><td class="mono">—</td><td>Small plastic enclosure</td><td class="mono">1</td><td>not metal, for Wi-Fi</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>ESPHome firmware</h2>
+    <p>Add it in Device Builder: <b>+ New device → Continue → skip</b>, name it <code>duct-static</code>, then replace its YAML with this. It uses the same <code>wifi_ssid</code>, <code>wifi_password</code> and <code>ota_password</code> secrets as esphome-trane. Add one more line to Secrets: <code>duct_static_api_key: "…"</code>, using the key Device Builder generates for the new device. The first install goes over USB; after that, Install → Wirelessly. The config passes <code>esphome config</code> on ESPHome 2026.6.5.</p>
+    <div class="code">
+      <div class="bar"><span>duct-static.yaml</span><button class="copy" id="copy-yaml" data-target="yaml">Copy</button></div>
+      <pre id="yaml"># Duct static pressure: Sensirion SDP31 (±500 Pa) on an ESP32-DevKitC, I2C.
+# Separate device from esphome-trane (no CAN). + port = supply plenum,
+# − port = return plenum -&gt; total external static pressure (TESP).
+# Secrets come from Device Builder's secrets.yaml (same ota/wifi keys).
+esphome:
+  name: duct-static
+  friendly_name: Duct Static
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+  encryption:
+    key: !secret duct_static_api_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "Duct Static Setup"
+
+captive_portal:
+
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  frequency: 100kHz
+  scan: true
+
+sensor:
+  # ESPHome reports SDP3x/SDP8xx in hPa and auto-detects the model.
+  # SDP31 / SDP32: 0x21 (ADDR to GND). SDP810-500Pa: 0x25.
+  - platform: sdp3x
+    id: duct_static_pa
+    name: "Pressure"
+    address: 0x21
+    update_interval: 2s
+    unit_of_measurement: Pa
+    accuracy_decimals: 1
+    filters:
+      - multiply: 100.0          # hPa -&gt; Pa
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 5          # one value every 10 s
+
+  - platform: copy
+    source_id: duct_static_pa
+    name: "Pressure inWC"
+    unit_of_measurement: inWC
+    device_class: ""
+    accuracy_decimals: 3
+    icon: mdi:gauge
+    filters:
+      - multiply: 0.00401463     # 1 Pa = 0.00401463 inWC
+
+  - platform: wifi_signal
+    name: "Wi-Fi Signal"
+    update_interval: 60s</pre>
+    </div>
+    <p>Home Assistant gets <code>sensor.duct_static_pressure</code> (Pa) and <code>sensor.duct_static_pressure_inwc</code>, one value every 10 s averaged from five 2 s reads.</p>
+  </section>
+
+  <section>
+    <h2>Duct resistance in Home Assistant</h2>
+    <p>This is the fan-law number from the Trane review: static divided by (rpm/1000)². It uses this sensor's static and the Trane blower motor speed, so it gives an independent check on the 0.27–0.28 baseline and on the Trane's own duct static reading. Put it in a template package:</p>
+    <div class="code">
+      <div class="bar"><span>packages/duct_resistance.yaml</span><button class="copy" id="copy-ha" data-target="ha">Copy</button></div>
+      <pre id="ha">template:
+  - sensor:
+      - name: "Duct Resistance (SDP31)"
+        unique_id: duct_resistance_sdp31
+        unit_of_measurement: "inWC/krpm²"
+        state_class: measurement
+        availability: >
+          {{ states('sensor.duct_static_pressure_inwc') | float(none) is number
+             and states('sensor.trane_air_handler_blower_motor_speed') | float(0) > 300 }}
+        state: >
+          {% set s = states('sensor.duct_static_pressure_inwc') | float %}
+          {% set r = states('sensor.trane_air_handler_blower_motor_speed') | float %}
+          {{ (s / (r / 1000) ** 2) | round(3) }}</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>Before and after the first power-up</h2>
+    <ol class="steps">
+      <li>With the tubes off the sensor, the reading should sit within about ±1 Pa of zero. That confirms the wiring, the address and the zero point.</li>
+      <li>With the blower on fan-On (maximum), expect about 1.0 inWC (~249 Pa) if your system matches the Trane reading. A <b>negative</b> value means P+ and P− are swapped.</li>
+      <li>If the log says <code>SDP3X: Couldn't read data</code>, the I²C scan at boot lists the addresses it found: 0x21 for the SDP31, 0x25 for the SDP810.</li>
+    </ol>
+  </section>
+
+  <footer class="titleblock" aria-label="Title block">
+    <div><span>Drawing</span><strong>DS-01</strong></div>
+    <div><span>Title</span><strong>SDP31 Duct Static Node</strong></div>
+    <div><span>Rev · Date</span><strong>A · 2026-09-30</strong></div>
+    <div><span>Bus</span><strong>I²C 0x21 · Wi-Fi</strong></div>
+    <div><span>Sources</span><strong style="font-size:14px;font-family:var(--font-body);font-weight:500"><a href="https://sensirion.com/products/catalog/SDP31">SDP31</a> · <a href="https://esphome.io/components/sensor/sdp3x/">ESPHome sdp3x</a></strong></div>
+  </footer>
+</main>
+
+<script>
+document.querySelectorAll("button.copy").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var pre = document.getElementById(b.dataset.target);
+    var done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = "Copy"; }, 1600); };
+    var select = function () {
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); done("Selected");
+    };
+    try {
+      navigator.clipboard.writeText(pre.textContent).then(function () { done("Copied"); }, select);
+    } catch (e) { select(); }
+  });
+});
+</script>
