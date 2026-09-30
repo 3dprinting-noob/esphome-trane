@@ -9,7 +9,7 @@ views:
         cards:
           - type: custom:mushroom-title-card
             title: Trane CAN Engineering
-            subtitle: Passive listen-only (firmware CB2.1) • no CAN write controls exposed
+            subtitle: Passive listen-only (firmware CB2.2) • no CAN write controls exposed
           - type: thermostat
             entity: climate.trane_thermostat_ux360_trane_climate
             name: Trane (display only – control via Nexia zones)
@@ -22,7 +22,17 @@ views:
               - entity: sensor.trane_heat_pump_compressor_speed_actual
                 name: Compressor speed actual (rps)
               - entity: sensor.trane_air_handler_indoor_blower_speed
-                name: Blower %
+                name: Blower request %
+          - type: history-graph
+            title: EXPERIMENTAL remote sensor check (24 h) — 0x3D0 vs ThirdReality corridor
+            hours_to_show: 24
+            entities:
+              - entity: sensor.trane_thermostat_ux360_remote_temp_sensor_1
+                name: Remote 1 (EXPERIMENTAL)
+              - entity: sensor.trane_thermostat_ux360_remote_temp_sensor_2
+                name: Remote 2 (EXPERIMENTAL)
+              - entity: sensor.third_reality_inc_3rths0324z_temperature_2
+                name: ThirdReality upstairs corridor
           - type: history-graph
             title: Power (6 h)
             hours_to_show: 6
@@ -112,6 +122,14 @@ views:
                 name: Indoor Humidity
                 icon: mdi:water-percent
               - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_remote_temp_sensor_1
+                name: Remote Temp Sensor 1 — EXPERIMENTAL (0x3D0, unconfirmed)
+                icon: mdi:flask-outline
+              - type: custom:mushroom-entity-card
+                entity: sensor.trane_thermostat_ux360_remote_temp_sensor_2
+                name: Remote Temp Sensor 2 — EXPERIMENTAL (0x3D0, unconfirmed)
+                icon: mdi:flask-outline
+              - type: custom:mushroom-entity-card
                 entity: sensor.trane_thermostat_ux360_heat_setpoint_zone_1
                 name: Heat Setpoint Zone 1
                 icon: mdi:thermometer-chevron-up
@@ -185,7 +203,7 @@ views:
                 icon: mdi:thermometer-chevron-up
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_air_handler_indoor_blower_speed
-                name: Indoor Blower Speed (0 when off)
+                name: Blower Speed Request % (IndoorStatus.E, 0 when off)
                 icon: mdi:fan
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_air_handler_indoor_unit_state
@@ -230,7 +248,7 @@ views:
                 icon: mdi:flash
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_heat_pump_discharge_temp
-                name: Suction Pressure abs (was Discharge Temp)
+                name: Suction Pressure raw (was Discharge Temp)
                 icon: mdi:gauge
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_heat_pump_suction_temp
@@ -295,11 +313,11 @@ views:
                 icon: mdi:current-ac
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_heat_pump_suction_pressure_abs
-                name: Suction Pressure (abs)
+                name: Suction Pressure (raw; gauge/abs unresolved)
                 icon: mdi:gauge-low
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_heat_pump_liquid_pressure_abs
-                name: Liquid Pressure (abs)
+                name: Liquid Pressure (raw; gauge/abs unresolved)
                 icon: mdi:gauge-full
               - type: custom:mushroom-entity-card
                 entity: sensor.trane_heat_pump_compressor_discharge_temp

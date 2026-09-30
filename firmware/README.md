@@ -125,3 +125,59 @@ humidity ("SC360 Outdoor Temp" no longer updates); Compressor Power in W; new
 Operating Mode, Outdoor Fan Speed Request, Blower Speed Request and Compressor
 Phase Current. CB2.1 adds Zone 1/2 Damper Command (0x250) and Position (0x2C8). Same install path as CB1 (paste, Save, Install → Wirelessly;
 OTA now uses `ota_password`). `esphome config` valid (2026.6.5).
+
+## Profile CB2.2 (2026-09-30)
+
+`esphome-trane.cb22.yaml` = CB2.1 plus label fixes from the 48 h household
+packet and the 09-28 capture (`docs/house/evidence/2026-09-30-upstream-confirmation.md`).
+`esphome-trane.cb2.yaml` (CB2.1) stays in the repo for rollback.
+
+Entity **names are unchanged**, so every HA entity ID and Climate Brain binding
+stays the same. Only units and device classes change; the corrected display
+names come from Climate Brain 4.2.15 (HA `customize`).
+
+| Entity (name kept) | Frame | Was | Now | What it really is |
+|---|---|---|---|---|
+| Refrigerant Pressure | 0x38F f0 | PSI | V (voltage) | line voltage, ~241 in every state |
+| Discharge Temp | 0x383 f0 | °F (temperature) | psi (pressure) | suction pressure (raw; gauge/abs unresolved) |
+| Compressor Frequency | OdStatus.B | Hz | % | compressor demand-type % |
+| Refrig Circuit Temp | 0x387 f0 | °F (temperature) | rps | fixed ~55 speed reference |
+
+**EXPERIMENTAL — Remote Temp Sensor 1 / 2** (`sensor.trane_thermostat_ux360_remote_temp_sensor_1` / `_2`):
+0x3D0 decoded as dewbot6's SC360 wireless remote sensors (two float32 LE, °C;
+bytes 4–7 = sensor 1, bytes 0–3 = sensor 2; 0 = empty slot, not published).
+**Not confirmed on this house:** on 09-28 slot 2 read ~66 °F and moved with the
+equipment, not with the ThirdReality upstairs-corridor sensor it sits next to.
+The household will reposition the Trane sensor (it may be out of range). The
+dashboard graph "EXPERIMENTAL remote sensor check" plots both slots against
+the corridor sensor. Confirmed = tracks the corridor within ~1–2 °F for a day,
+including when the system is idle. Otherwise the decode is removed in the next
+profile. Nothing in Climate Brain reads these sensors.
+
+Still `mode: LISTENONLY`; no transmit path.
+
+**Validation:** `esphome config` (ESPHome 2026.6.5) reports the configuration
+valid. A full compile could not run in the authoring sandbox (the PlatformIO
+registry is blocked by its network policy), so the first real compile is the
+Device Builder install. A compile error stops there, before any upload.
+
+### Install (Device Builder)
+
+1. Open **esphome-trane** in Device Builder → **Edit**.
+2. Replace everything with `firmware/esphome-trane.cb22.yaml`. Keep your
+   `use_address` / Wi-Fi lines if your copy differs from the repo.
+3. **Save → Install → Wirelessly.** The screen shows `LISTEN ONLY CB2.2`.
+
+### After the flash
+
+- **Settings → Repairs:** HA may report that the unit of `Refrigerant
+  Pressure`, `Discharge Temp`, `Compressor Frequency` and `Refrig Circuit
+  Temp` changed. Choose **"Update the unit of the historic statistic
+  values"**, or delete the old statistics. Either is fine; the values were
+  never those units.
+- **Compressor Power** should read in **W**. If the entity settings in HA
+  still show kW (the household saw kW with watt-sized values on CB2.1), set
+  the display unit back to W in the entity's settings.
+- The two Remote Temp Sensors appear on the Thermostat UX360 device. `unknown`
+  means no non-zero 0x3D0 slot arrived.
+- **Rollback:** paste `esphome-trane.cb2.yaml` and install.
