@@ -41,7 +41,7 @@ equipment), the difference is called out.
 | 0x380 f1 | Outdoor air temperature, °F | Confirmed | Matches ambient; f0 always −99 (unavailable) |
 | 0x386 | f0 = 2, f1 = 50 constants (entity "Refrig Sensor B" = f1) | Confirmed constant | |
 | 0x282 b1 | Stator heat active | Candidate | 0 throughout (no stator-heat cycle in 3 h at 61–68 °F) |
-| 0x3D0 f1 | Compressor minimum speed, rps — OR wireless remote temp sensor 1 in °C (dewbot6 upstream 2026-09-29); see UPSTREAM_CHECK_2026-10-11.md | Candidate (was Strong) | 18.8–19.3 over 3 h |
+| 0x3D0 f1 | Compressor minimum speed, rps (candidate). Not a room temperature here: 9 days flat at 18.7–19.7, ~5 °F below both zones, uncorrelated (evidence/2026-10-11-nine-day-capture.md); f0 always 0 | Candidate (was Strong) | 18.7–19.7 over 9 days |
 | 0x410 f0/f1, 0x430 f0, 0x460 f0 | Outdoor electronics temperatures? | Candidate | 76–93 °F, nearly flat even at 3.3 kW — **not** the drive IPM trend uncharted saw |
 | 0x430 f1, 0x450 f0/f1 | Unknown | Raw | Noisy 237–362 in every phase |
 
