@@ -4,7 +4,7 @@
 # alongside Home Assistant) and writes hourly JSONL chunks plus daily .tar.gz
 # archives, using uncharted9898's trane_log_collector.py (MIT), pinned below.
 #
-#   bash pi_trane_capture_install.sh [esp-address] [api-key]   # install + start (default 10.70.1.94)
+#   bash pi_trane_capture_install.sh [esp-address] [api-key]   # install + start (default esphome-trane.local: survives DHCP address changes)
 #   bash pi_trane_capture_install.sh --status        # service state + data size
 #   bash pi_trane_capture_install.sh --undo          # stop + remove service (keeps data)
 #
@@ -44,7 +44,7 @@ case "${1:-}" in
     exit 0 ;;
 esac
 
-ESP="${1:-10.70.1.94}"
+ESP="${1:-esphome-trane.local}"
 KEY="${2:-}"
 
 # Reject typos such as "10.70.1.94E": an IPv4 address or a host name only.

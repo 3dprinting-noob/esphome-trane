@@ -4,7 +4,7 @@
 pressure nodes under `hardware/`, and later findings). This branch (`claude/content-review-testing-mxginz`) holds firmware profiles CB1 → CB2 → CB2.1, the
 installed-config baseline, the kitchen-Pi capture scripts and `docs/house/TELEMETRY_HOUSE.md`.
 
-Household rules for this repo: the ESPHome device (M5Stack AtomS3R + CAN module, GPIO5/6, 50 kbps, 10.70.1.94) runs `canbus: mode: LISTENONLY` — **never add a
+Household rules for this repo: the ESPHome device (M5Stack AtomS3R + CAN module, GPIO5/6, 50 kbps, DHCP: 10.70.1.94 until 2026-10-06, 10.70.1.92 since; use esphome-trane.local) runs `canbus: mode: LISTENONLY` — **never add a
 transmit path**; the kitchen Pi also runs the capture service (`tools/pi/pi_trane_capture_install.sh`) and is the same Pi that runs the wall panel and will power the
 ReSpeaker voice board + C4002 radar.
 

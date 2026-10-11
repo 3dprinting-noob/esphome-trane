@@ -44,3 +44,15 @@ reading is ruled out.
   in 9 days, 1 from a malformed transfer, and its value (74) matched the readings either side. **No wrong setpoint
   observed so far.** The risk is real but has not yet shown up as a bad value.
 - CB2.2 reassembly is still recommended, but it is not urgent for Climate Brain.
+
+## Recorder outage cause (diagnosed 2026-10-11)
+- On 2026-10-06, 18:19–18:58, the board's API connection dropped every 1–2 min. After that it stopped answering at
+  10.70.1.94.
+- The Pi lost its own network at 19:04 and rebooted at 19:22.
+- The board came back by DHCP at **10.70.1.92**. The recorder was pinned to the old IP, so it kept running and
+  recorded nothing for 5 days, with no warning.
+- Ping to the board is 83–317 ms, which points to weak Wi-Fi. That could also explain some of the disconnects, and
+  part of the frame loss in the log stream.
+- Fixes:
+  - point the recorder at `esphome-trane.local`, which is now the installer default;
+  - reserve the address in the router.
