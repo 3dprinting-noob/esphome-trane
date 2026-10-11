@@ -56,3 +56,33 @@ reading is ruled out.
 - Fixes:
   - point the recorder at `esphome-trane.local`, which is now the installer default;
   - reserve the address in the router.
+
+## Cross-check with Climate Brain's engineering log (21,355 rows, 2026-09-10 .. 10-11)
+
+**0x3D0 is settled: it is not a temperature.** Matched within 5 min:
+
+| reference | range | r with 0x3D0 | mean 0x3D0 − reference |
+|---|---|---|---|
+| thermostat room temp | 68–73 °F | −0.42 | −4.6 °F |
+| ThirdReality bedroom | 66.7–75.3 | −0.29 | −5.3 |
+| ThirdReality upstairs corridor | 67.1–75.0 | −0.20 | −4.6 |
+| ThirdReality office | 67.9–75.3 | −0.28 | −5.6 |
+| return air | 61.3–76.5 | +0.09 | −3.5 |
+| outdoor | 46–86 | −0.24 | +1.0 |
+
+**CAN validation** (Climate Brain's writer request vs UX360 setpoints read from the bus): 2,236 disagreement
+samples.
+- **207 were garbled CAN values** (heat setpoint "6.0 °F", a truncated 68/69). They occurred only on 09-10 and 09-14,
+  zone 1, under the old pre-CB1 firmware. **None since CB1/CB2 (09-28).**
+- **1,330** differ only in the mode label (bus heat/cool vs heat_cool) and/or by ≤1 °F: the known Nexia deadband
+  normalisation. Benign.
+- **~250 since 09-28 are real, sustained differences of about 2 °F.** Examples:
+  - zone 2, Climate Brain wrote heat_cool 69/72 while the bus showed heat 67/72, from 10-05 19:20 to 10-06 15:34;
+  - zone 2, Climate Brain wrote heat 67 while the bus showed 69/74, on 10-03 20:28–23:48.
+
+  These are not transport errors: the values are plausible and persist for hours. Either the thermostat held a
+  different setpoint (a wall/app change or a write that did not stick), or the comparison is stale. Next step: the
+  writer log (`climate_brain_writer.csv`) for those windows.
+- Since 10-08: only `legacy_can_match` / `not_tested`.
+
+Engineering-log gaps over 1 h: 09-23 23:26 (15.4 h), 09-25 05:26 (11.6 h), 09-26 05:06 (7.3 h).
