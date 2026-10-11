@@ -19,7 +19,7 @@ equipment), the difference is called out.
 | 0x384 f0 | Compressor speed actual, rps | Confirmed | Follows 0x280; ramps down ~50 s after heat request drops |
 | 0x281 b6 | Compressor demand % (mirror of OdStatus CompDemandPercent) | Confirmed | 46/67 JSON updates exact within 2.5 s, rest off by 1–4 during ramps |
 | OdStatus.B (JSON) | Demand-type %, **not Hz** (entity "Compressor Frequency") | Strong | 99 at 26 rps (cool) and at 57 rps (heat) |
-| 0x281 b7 | Operating mode: 0 idle, 1 cooling, 2 heating | Strong | Constant per phase. **uncharted reads it as blower-active flag** |
+| 0x281 b7 | Operating mode: 0 idle, 1 cooling, 2 heating | Strong | Constant per phase. uncharted's blower-active reading was disproved upstream 2026-10-07 (fan-only test, b7 stayed 0), which supports this one |
 | 0x385 f0 | Compressor power, **W** | Strong | ~560 W cool / ~3000 W heat, always below 0x38C f1 input power. **uncharted used kW**; CB1 filter (<20) drops every running value — fixed in CB2 |
 | 0x385 f1 | Unknown | Raw | 0 idle, ~24 cool, ~160 heat — not a speed ceiling here |
 | 0x38C f1 | Outdoor input power, W | Confirmed | 17–22 W standby, ~630 W cool, ~3340 W heat; = V × I (0x38F f0 × 0x389 f1) within 3 % |
