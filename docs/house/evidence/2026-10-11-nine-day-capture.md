@@ -86,3 +86,16 @@ samples.
 - Since 10-08: only `legacy_can_match` / `not_tested`.
 
 Engineering-log gaps over 1 h: 09-23 23:26 (15.4 h), 09-25 05:26 (11.6 h), 09-26 05:06 (7.3 h).
+
+## CORRECTION, same day: 0x3D0 IS the wireless remote sensor
+The household linked the wireless remote thermometer to the SC360 at about 15:00 on 2026-10-11, while the recorder
+was running:
+- 0x3D0 slot 1 (bytes 4–7) was 19.1 °C at 14:46.
+- It **started changing at 14:58:27**, rose steadily to 24.4 °C (75.9 °F) by 15:07 (the sensor warmed in the hand
+  during pairing), then fell back: 20.6 °C (69.2 °F) at 15:16 and still dropping.
+- Slot 0 stayed 0.0 throughout (no second sensor).
+
+The verdicts above ("not a room temperature", "not a temperature") were **wrong**. They showed only that it was not a
+temperature *of the conditioned rooms*. The flat 18.7–19.7 °C for nine days was this sensor, unlinked, reporting from
+a steady location. dewbot6's decode is **confirmed** for this house. Lesson: no correlation with the rooms rules out
+"room temperature here", not "temperature".
