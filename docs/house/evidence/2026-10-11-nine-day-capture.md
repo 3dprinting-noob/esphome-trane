@@ -99,3 +99,31 @@ The verdicts above ("not a room temperature", "not a temperature") were **wrong*
 temperature *of the conditioned rooms*. The flat 18.7–19.7 °C for nine days was this sensor, unlinked, reporting from
 a steady location. dewbot6's decode is **confirmed** for this house. Lesson: no correlation with the rooms rules out
 "room temperature here", not "temperature".
+
+## SECOND CORRECTION (capture 14:43–20:00, analysed 2026-10-12): 0x3D0 is NOT the new wireless sensor
+The pairing as the JSON stream recorded it (UX360 technician mode):
+- **14:57:42:** technician profiles opened.
+- **14:58:25:** Z-Wave bridge put into inclusion (`Bridge Put A=E`).
+- **15:02:20:** `EquipmentDetails` reports the new device: `ZSENS930AW00MAA`, "Zwave Sensor", serial 2615R7DDHX,
+  firmware 2.02. `SensorInfo` names it "Wireless Sensor 1".
+- **15:05:02:** `SensorInfo Put` saves the sensor list:
+  - "UX360 Thermostat 01": zone 1, weight 100.0;
+  - "Wired Sensor 02" (2615DT020X): zone 2, weight 50.0;
+  - wireless 2615R7DDHX, renamed **"Upstairs"**: zone 2, weight 50.0.
+
+  **Zone 2 is now the 50/50 average of the wired and the upstairs sensors.**
+- **15:05:26–15:08:28:** technician cooling test (compressor demand up to 89%).
+- **19:23–19:25:** a CANopen node reboot and re-commission (NMT, LSS on 0x7E4, "AOC Secondary Bootloader v1.0" on
+  0x6F0).
+
+0x3D0 slot 1:
+- It began rising at 14:58:27, **before the sensor existed on the system**, and peaked at 24.4 °C at about 15:07.
+- It rose again 15:45–16:30, then returned to **exactly its old 19.0 °C baseline** and stayed there all evening.
+  Meanwhile zone 2 (50% "Upstairs") read 70–73 °F.
+- 0x3E0 f0 follows it, lagged and smoothed.
+
+So it is a real temperature from a fixed, normally steady place, **not** the upstairs sensor. The first correction
+("0x3D0 IS the remote sensor") was wrong. The upstairs sensor's own reading does not appear as any new or changed
+CAN field. It is visible only through zone 2's averaged temperature (`ZoneStatus.2.H`). Still open: which sensor
+0x3D0/0x3E0 is. The likely candidate is a sensor near the equipment, warmed by someone being there and by the test
+run.
