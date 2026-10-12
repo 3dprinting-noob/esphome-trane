@@ -97,7 +97,7 @@ Zone 2 calls. Capture below ~35 °F outdoor for the furnace side.
 | Field | Meaning | Confidence | Evidence |
 |---|---|---|---|
 | 0x2C0 f4 (bytes 4–7, float) | **Wired zone-2 sensor ("Wired Sensor 02", main bedroom), °F**, about 0.01 °F resolution. Bytes 0–3 = −99.0 (zone panel "no data") | **Strong** | 9 days vs ThirdReality bedroom sensor placed beside it: r = 0.91, mean diff −0.02 °F, sd 0.75 (n = 3,437). Weaker vs corridor (r 0.80) and office (0.74) |
-| 0x420 b4 | Humidity %, 45–60, about 11.5 points below the UX360 indoor RH | Candidate | r = 0.84 vs indoor_humidity_pct (n = 3,728). Location unknown; check against the ThirdReality bedroom humidity |
+| 0x420 b4 | Humidity-like %, 45–60. Tracks the UX360 indoor RH (r = 0.84, sd 1.0) at a steady −11.5 points. **Not** the Z-Wave sensor (present 9 days before it was paired) and not dew point (r = 0.54) | Candidate | Only Trane humidity source before 2026-10-11 is the first-floor panel (household). Best fit: RH at a warmer spot (warmer air, same moisture, lower RH), e.g. inside equipment. Identity open |
 | 0x2C4 | −99.0 always (zone-panel slot with no sensor) | Strong | 3,742 frames, one payload |
 | 0x2CC | 0x05 constant (zone-panel bitmask) | Candidate | |
 
