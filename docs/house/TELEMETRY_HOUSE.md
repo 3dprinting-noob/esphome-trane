@@ -92,3 +92,20 @@ Zone 2 closing below ~10 % (satisfied) raised duct resistance 0.275 → 0.31.
 
 Furnace (dual-fuel) operation, defrost, stator heat, fan-only circulation,
 Zone 2 calls. Capture below ~35 °F outdoor for the furnace side.
+
+## Added 2026-10-12 (pairing capture + nine-day cross-check)
+| Field | Meaning | Confidence | Evidence |
+|---|---|---|---|
+| 0x2C0 f4 (bytes 4–7, float) | **Wired zone-2 sensor ("Wired Sensor 02", main bedroom), °F**, about 0.01 °F resolution. Bytes 0–3 = −99.0 (zone panel "no data") | **Strong** | 9 days vs ThirdReality bedroom sensor placed beside it: r = 0.91, mean diff −0.02 °F, sd 0.75 (n = 3,437). Weaker vs corridor (r 0.80) and office (0.74) |
+| 0x420 b4 | Humidity %, 45–60, about 11.5 points below the UX360 indoor RH | Candidate | r = 0.84 vs indoor_humidity_pct (n = 3,728). Location unknown; check against the ThirdReality bedroom humidity |
+| 0x2C4 | −99.0 always (zone-panel slot with no sensor) | Strong | 3,742 frames, one payload |
+| 0x2CC | 0x05 constant (zone-panel bitmask) | Candidate | |
+
+The new Z-Wave "Upstairs" sensor's reading is **not** carried on CAN as its own field, and not in the JSON either.
+It is visible only inside zone 2's averaged `ZoneStatus.2.H` (50% wired + 50% Upstairs since 2026-10-11 15:05).
+Since 0x2C0 gives the wired half precisely, the upstairs value can be estimated as `2 × zone2 − 0x2C0`. Zone 2 is
+whole degrees only, so expect about ±1 °F.
+
+Also in this capture: 2026-10-11 19:23:50 alarm `Err 094.00`, level 3, origin `25421Y62JF`, alongside a CANopen node
+reboot ("AOC Secondary Bootloader v1.0"), household away. 15:48–15:50: a second technician session toggled config
+6.1.1 / 6.1.2 on and off.
