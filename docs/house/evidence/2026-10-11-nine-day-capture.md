@@ -127,3 +127,12 @@ So it is a real temperature from a fixed, normally steady place, **not** the ups
 CAN field. It is visible only through zone 2's averaged temperature (`ZoneStatus.2.H`). Still open: which sensor
 0x3D0/0x3E0 is. The likely candidate is a sensor near the equipment, warmed by someone being there and by the test
 run.
+
+## Move test (2026-10-11 evening): 0x3D0 is not the Z-Wave sensor
+The household moved the Z-Wave "Upstairs" sensor from the kitchen to an upstairs room at about 20:00–20:15.
+0x3D0 slot 1 did not react: 19.04–19.11 °C (66.3–66.4 °F) every 10 min from 19:33 to 20:50. Explanation 1 (Z-Wave
+sensor relayed by the bridge) is **ruled out**.
+
+Remaining explanation: a fixed sensor at or near the **SC360 remote panel in the kitchen**. It normally reads a few
+°F below the room, and it warmed during both oven-on periods (14:58–15:30, 15:45–16:30), when the household was at
+the panel. Confirmation test: warm the panel by hand for 2 min at a noted time.
